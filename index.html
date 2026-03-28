@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 FairSplit</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#dbeafe,#f0f4f8);
+    color: #111;
+    padding: 15px;
+    transition: 0.3s;
+  }
+  h2 {
+    color: #2563eb;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  }
+  input, select, button, textarea {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 10px rgba(37,99,235,0.3);
+  }
+  input[type="date"] { color: #333; padding: 9px 10px; }
+  button {
+    background: linear-gradient(90deg,#2563eb,#1e40af);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 12px;
+  }
+  button:hover {
+    background: linear-gradient(90deg,#1e40af,#2563eb);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
+  .card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: 0.3s;
+  }
+  .card:hover {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+  }
+  pre {
+    background: #e0e7ff;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 15px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  .group-header {
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .fade-in { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s forwards; }
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  #memberCount, .participantCount {
+    font-weight: 600;
+    color: #1d4ed8;
+    margin-top: 5px;
+    font-size: 15px;
+  }
+  .participants-checkboxes label {
+    margin-right: 10px;
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+  .delete-btn { background: #ef4444; padding: 8px 15px; font-size: 14px; }
+  .delete-btn:hover { background: #dc2626; }
+  .debt-card {
+    background: #fef3c7;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 10px 0;
+    position: relative;
+  }
+  .debt-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ef4444;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  .trip-date-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .trip-date-row label { font-size: 14px; font-weight: 600; color: #374151; }
+
+  /* NEW: select all btn */
+  .select-all-btn {
+    background: linear-gradient(90deg,#0891b2,#0e7490);
+    padding: 7px 14px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .select-all-btn:hover { background: linear-gradient(90deg,#0e7490,#0891b2); }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    input, select, button, textarea { width: 100%; font-size: 16px; box-sizing: border-box; }
+    button { padding: 14px; font-size: 16px; width: 100%; }
+    .card { padding: 20px; }
+    .participants-checkboxes label { display: block; margin-right: 0; }
+    .group-header { font-size: 20px; }
+    pre { font-size: 14px; }
+    .trip-date-row { flex-direction: column; align-items: flex-start; }
+  }
+
+  .balance-positive { color: green; font-weight: 600; }
+  .balance-negative { color: red; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h2>💰 FairSplit - A Smart Group Expense Splitter</h2>
+
+<!-- Members + Trip Date -->
+<div class="card">
+  <label>Provide member names (comma or space separated): </label><br>
+  <input id="members" placeholder="e.g. Name_1, Name_2, Name_3">
+  <button onclick="setMembers()">Set Members</button>
+  <div class="trip-date-row">
+    <label>📅 Trip / Group Date:</label>
+    <input type="date" id="tripDate">
+  </div>
+  <div id="memberCount">Members added: 0</div>
+</div>
+
+<div id="groups"></div>
+<button onclick="addGroup()">➕ Add Expense Group</button>
+<br><br>
+
+<!-- Custom Debts -->
+<div class="card">
+  <h3>💸 Unequal Dues (Optional Custom Debts)</h3>
+  <p style="color:#555;font-size:14px;margin-top:0;">
+    Add debts between people outside of any expense group.<br>
+    <strong>From</strong> = person who <strong>owes money</strong> &nbsp;|&nbsp;
+    <strong>To</strong> = person who <strong>receives money</strong>
+  </p>
+  <div id="customDebts"></div>
+  <button onclick="addCustomDebt()">➕ Add Custom Debt</button>
+</div>
+
+<!-- Already Paid -->
+<div class="card">
+  <h3>✅ Already Paid (Optional)</h3>
+  <p style="color:#555;font-size:14px;margin-top:0;">
+    Record payments already made outside the app, so they get counted in settlements.<br>
+    <strong>From</strong> = person who <strong>already paid</strong> &nbsp;|&nbsp;
+    <strong>To</strong> = person who <strong>received that payment</strong>
+  </p>
+  <div id="alreadyPaidList"></div>
+  <button onclick="addAlreadyPaid()">➕ Add Already Paid</button>
+</div>
+
+<button onclick="compute()">💳 Compute Settlements</button>
+
+<!-- Results with Copy + Download buttons -->
+<div class="card" id="resultsCard">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+    <h3 style="margin:0;">⚖ Results</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="resultActions">
+      <button id="copyBtn" onclick="copyText()" style="background:linear-gradient(90deg,#059669,#047857);padding:9px 18px;font-size:14px;">📋 Copy as Text</button>
+      <button id="dlBtn" onclick="downloadImage()" style="background:linear-gradient(90deg,#7c3aed,#6d28d9);padding:9px 18px;font-size:14px;">🖼️ Download as Image</button>
+    </div>
+  </div>
+  <pre id="output"></pre>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+let members = [];
+let groupCount = 0;
+let customDebtCount = 0;
+let deletedGroups = new Set();
+let apCounters = { global: 0 };
+let deletedAPs = new Set();
+
+function splitNames(input) {
+  return input.split(/[,\s]+/).map(n => n.trim()).filter(Boolean);
+}
+
+function formatDate(val) {
+  if (!val) return '';
+  const [y, m, d] = val.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function setMembers() {
+  const raw = document.getElementById('members').value.trim();
+  if (!raw) { alert("Please enter at least one member."); return; }
+  members = splitNames(raw);
+  document.getElementById('memberCount').innerText = `Members added: ${members.length} → ${members.join(", ")}`;
+}
+
+// NEW: toggle all checkboxes in a group
+function selectAll(groupNum) {
+  const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
+  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+  checkboxes.forEach(cb => cb.checked = !allChecked);
+  updateParticipants(groupNum);
+}
+
+function addGroup() {
+  if (members.length === 0) { alert("Add members first!"); return; }
+  groupCount++;
+
+  const div = document.createElement('div');
+  div.className = 'card fade-in';
+  div.id = `group_${groupCount}`;
+
+  let checkboxesHTML = members.map(m =>
+    `<label><input type="checkbox" class="participantCheckbox" value="${m}" onchange="updateParticipants(${groupCount})"> ${m}</label>`
+  ).join(' ');
+
+  div.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div class="group-header">🧾 Expense Group #${groupCount}</div>
+      <button onclick="deleteGroup(${groupCount})" class="delete-btn">🗑️ Delete</button>
+    </div>
+    Participants:
+    <button class="select-all-btn" onclick="selectAll(${groupCount})">☑️ Select / Deselect All</button><br>
+    <div class="participants-checkboxes" id="partCheckboxes_${groupCount}">${checkboxesHTML}</div>
+    <div class="participantCount" id="participantCount_${groupCount}"></div>
+    Number of payers: <input type="number" id="num_${groupCount}" value="1" min="1" style="width:50px" onchange="updatePayers(${groupCount})"><br>
+    <div id="payers_${groupCount}"></div>
+  `;
+  document.getElementById('groups').appendChild(div);
+  updateParticipants(groupCount);
+  updatePayers(groupCount);
+}
+
+function deleteGroup(groupNum) {
+  const groupDiv = document.getElementById(`group_${groupNum}`);
+  if (groupDiv) { groupDiv.remove(); deletedGroups.add(groupNum); renumberGroups(); }
+}
+
+function renumberGroups() {
+  let visibleNum = 1;
+  for (let i = 1; i <= groupCount; i++) {
+    if (deletedGroups.has(i)) continue;
+    const groupDiv = document.getElementById(`group_${i}`);
+    if (groupDiv) {
+      const hdr = groupDiv.querySelector('.group-header');
+      if (hdr) hdr.innerHTML = `🧾 Expense Group #${visibleNum}`;
+      visibleNum++;
+    }
+  }
+}
+
+function addAlreadyPaid() {
+  if (members.length === 0) { alert("Add members first!"); return; }
+  apCounters.global++;
+  const apId = apCounters.global;
+  const opts = members.map(m => `<option>${m}</option>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'debt-card fade-in';
+  div.id = `ap_${apId}`;
+  div.innerHTML = `
+    <button onclick="deleteAlreadyPaid(${apId})" class="debt-delete">🗑️</button>
+    <label>From (already paid):</label>
+    <select id="apFrom_${apId}">${opts}</select>
+    <label>To (received):</label>
+    <select id="apTo_${apId}">${opts}</select>
+    ₹<input type="number" id="apAmt_${apId}" min="0" value="0" style="width:100px;">
+    <input type="text" id="apDesc_${apId}" placeholder="Description (optional)" style="width:170px;">
+    <input type="date" id="apDate_${apId}" value="${todayISO()}" style="width:155px;">
+  `;
+  document.getElementById('alreadyPaidList').appendChild(div);
+}
+
+function deleteAlreadyPaid(apId) {
+  const el = document.getElementById(`ap_${apId}`);
+  if (el) { el.remove(); deletedAPs.add(apId); }
+}
+
+function addCustomDebt() {
+  if (members.length === 0) { alert("Add members first!"); return; }
+  customDebtCount++;
+  const div = document.createElement('div');
+  div.className = 'debt-card fade-in';
+  div.id = `debt_${customDebtCount}`;
+  div.innerHTML = `
+    <button onclick="deleteDebt(${customDebtCount})" class="debt-delete">🗑️</button>
+    <label>From (owes):</label>
+    <select id="debtFrom_${customDebtCount}">${members.map(m => `<option>${m}</option>`).join("")}</select>
+    <label>To (receives):</label>
+    <select id="debtTo_${customDebtCount}">${members.map(m => `<option>${m}</option>`).join("")}</select>
+    ₹<input type="number" id="debtAmt_${customDebtCount}" min="0" value="0" style="width:100px;">
+    <input type="text" id="debtDesc_${customDebtCount}" placeholder="Description (optional)" style="width:170px;">
+    <input type="date" id="debtDate_${customDebtCount}" value="${todayISO()}" style="width:155px;">
+  `;
+  document.getElementById('customDebts').appendChild(div);
+}
+
+function deleteDebt(debtNum) {
+  const el = document.getElementById(`debt_${debtNum}`);
+  if (el) el.remove();
+}
+
+function updateParticipants(groupNum) {
+  const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
+  const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+  document.getElementById(`participantCount_${groupNum}`).innerText = `Participants: ${participants.join(", ")}`;
+  updatePayers(groupNum);
+}
+
+function updatePayers(groupNum) {
+  const n = parseInt(document.getElementById(`num_${groupNum}`).value);
+  const payerDiv = document.getElementById(`payers_${groupNum}`);
+  const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
+  const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+  if (participants.length === 0) { payerDiv.innerHTML = ''; return; }
+
+  let existingData = [];
+  for (let i = 0; i < payerDiv.children.length; i++) {
+    const sel  = payerDiv.querySelector(`#payerName_${groupNum}_${i}`);
+    const amt  = payerDiv.querySelector(`#payerAmt_${groupNum}_${i}`);
+    const desc = payerDiv.querySelector(`#payerDesc_${groupNum}_${i}`);
+    const dt   = payerDiv.querySelector(`#payerDate_${groupNum}_${i}`);
+    if (sel && amt && desc) existingData[i] = {
+      name: sel.value, amt: amt.value,
+      desc: desc.value, date: dt ? dt.value : todayISO()
+    };
+  }
+
+  payerDiv.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    let prev = existingData[i] || {name: participants[0], amt: 0, desc: '', date: todayISO()};
+    payerDiv.innerHTML += `
+      <label>Payer ${i+1}:</label>
+      <select id="payerName_${groupNum}_${i}">
+        ${participants.map(m => `<option ${m===prev.name?'selected':''}>${m}</option>`).join("")}
+      </select>
+      ₹<input type="number" id="payerAmt_${groupNum}_${i}" min="0" value="${prev.amt}">
+      Description: <input type="text" id="payerDesc_${groupNum}_${i}" placeholder="What is this payment for?" value="${prev.desc}" style="width:160px;">
+      <input type="date" id="payerDate_${groupNum}_${i}" value="${prev.date}" style="width:155px;"><br>
+    `;
+  }
+}
+
+function compute() {
+  const tripDate = formatDate(document.getElementById('tripDate').value);
+  let expenses = [];
+
+  for (let i = 1; i <= groupCount; i++) {
+    if (deletedGroups.has(i)) continue;
+    const checkboxes = document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
+    const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    if (participants.length === 0) continue;
+
+    const num = parseInt(document.getElementById(`num_${i}`).value);
+    const payments = [];
+    for (let j = 0; j < num; j++) {
+      const name = document.getElementById(`payerName_${i}_${j}`).value;
+      const amt  = parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value) || 0;
+      const desc = document.getElementById(`payerDesc_${i}_${j}`).value.trim() || "No description";
+      const date = formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
+      payments.push({name, amt, desc, date});
+    }
+    expenses.push({payments, participants, groupIndex: i});
+  }
+
+  let customDebts = [];
+  for (let i = 1; i <= customDebtCount; i++) {
+    const fromEl = document.getElementById(`debtFrom_${i}`);
+    const toEl   = document.getElementById(`debtTo_${i}`);
+    const amtEl  = document.getElementById(`debtAmt_${i}`);
+    const descEl = document.getElementById(`debtDesc_${i}`);
+    const dateEl = document.getElementById(`debtDate_${i}`);
+    if (!fromEl || !toEl || !amtEl) continue;
+    const from = fromEl.value, to = toEl.value;
+    const amt  = parseFloat(amtEl.value) || 0;
+    const desc = descEl ? descEl.value.trim() : '';
+    const date = formatDate(dateEl ? dateEl.value : '');
+    if (amt > 0 && from !== to) customDebts.push({from, to, amt, desc, date});
+  }
+
+  let allAlreadyPaid = [];
+  for (let i = 1; i <= apCounters.global; i++) {
+    if (deletedAPs.has(i)) continue;
+    const fromEl = document.getElementById(`apFrom_${i}`);
+    const toEl   = document.getElementById(`apTo_${i}`);
+    const amtEl  = document.getElementById(`apAmt_${i}`);
+    const descEl = document.getElementById(`apDesc_${i}`);
+    const dateEl = document.getElementById(`apDate_${i}`);
+    if (!fromEl || !toEl || !amtEl) continue;
+    const from = fromEl.value, to = toEl.value;
+    const amt  = parseFloat(amtEl.value) || 0;
+    const desc = descEl ? descEl.value.trim() : '';
+    const date = formatDate(dateEl ? dateEl.value : '');
+    if (amt > 0 && from !== to) allAlreadyPaid.push({from, to, amt, desc: desc || 'Already paid', date});
+  }
+
+  // Build results output
+  let out = "";
+  if (tripDate) out += `📅 Trip / Group Date: ${tripDate}\n${'─'.repeat(38)}\n\n`;
+
+  let visibleNum = 1;
+  for (let i = 1; i <= groupCount; i++) {
+    if (deletedGroups.has(i)) continue;
+    const checkboxes = document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
+    const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    if (participants.length === 0) continue;
+
+    const num = parseInt(document.getElementById(`num_${i}`).value);
+    out += `💡 Group #${visibleNum}\n`;
+    for (let j = 0; j < num; j++) {
+      const name = document.getElementById(`payerName_${i}_${j}`).value;
+      const amt  = parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value) || 0;
+      const desc = document.getElementById(`payerDesc_${i}_${j}`).value.trim() || "No description";
+      const date = formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
+      out += `   ${name} paid ₹${amt.toFixed(2)} → ${desc}`;
+      if (date) out += ` (${date})`;
+      out += `\n`;
+    }
+    out += `   Participants: ${participants.join(", ")}\n\n`;
+    visibleNum++;
+  }
+
+  if (allAlreadyPaid.length > 0) {
+    out += "✅ Already Paid:\n";
+    allAlreadyPaid.forEach(ap => {
+      out += `   ${ap.from} → ${ap.to}: ₹${ap.amt.toFixed(2)}`;
+      if (ap.desc && ap.desc !== 'Already paid') out += ` (${ap.desc})`;
+      if (ap.date) out += ` (${ap.date})`;
+      out += `\n`;
+    });
+    out += `\n`;
+  }
+
+  if (customDebts.length > 0) {
+    out += "💸 Custom Debts:\n";
+    customDebts.forEach(d => {
+      out += `   ${d.from} owes ${d.to} ₹${d.amt.toFixed(2)}`;
+      if (d.desc) out += ` → ${d.desc}`;
+      if (d.date) out += ` (${d.date})`;
+      out += "\n";
+    });
+    out += "\n";
+  }
+
+  const {transactions, balance} = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
+
+  out += "⚖ Final Balances:\n";
+  members.forEach(p => {
+    const amt = (balance[p] || 0).toFixed(2);
+    if      (amt > 0)  out += `   ${p}: gets ₹${amt}\n`;
+    else if (amt < 0)  out += `   ${p}: owes ₹${(-amt).toFixed(2)}\n`;
+    else               out += `   ${p}: settled up ✅\n`;
+  });
+
+  out += "\n💳 Simplified Transactions:\n";
+  if (transactions.length === 0) out += "   All settled up! 🎉";
+  else transactions.forEach(t => out += `   ${t}\n`);
+
+  document.getElementById("output").innerText = out;
+}
+
+function minimizeTransactions(expenses, customDebts = [], alreadyPaid = []) {
+  let balance = {};
+
+  expenses.forEach(exp => {
+    const totalAmounts = {};
+    exp.payments.forEach(p => {
+      balance[p.name] = balance[p.name] || 0;
+      totalAmounts[p.name] = (totalAmounts[p.name] || 0) + p.amt;
+    });
+    const total = exp.payments.reduce((acc, p) => acc + p.amt, 0);
+    const share = total / exp.participants.length;
+    exp.participants.forEach(p => { balance[p] = balance[p] || 0; });
+    for (let p of exp.participants) {
+      balance[p] += (totalAmounts[p] || 0) - share;
+    }
+  });
+
+  customDebts.forEach(debt => {
+    balance[debt.from] = (balance[debt.from] || 0) - debt.amt;
+    balance[debt.to]   = (balance[debt.to]   || 0) + debt.amt;
+  });
+
+  alreadyPaid.forEach(ap => {
+    balance[ap.from] = (balance[ap.from] || 0) + ap.amt;
+    balance[ap.to]   = (balance[ap.to]   || 0) - ap.amt;
+  });
+
+  let debtors   = Object.entries(balance).filter(([_, a]) => a < 0).map(([p, a]) => [p, -a]);
+  let creditors = Object.entries(balance).filter(([_, a]) => a > 0).map(([p, a]) => [p,  a]);
+  let i = 0, j = 0, transactions = [];
+
+  while (i < debtors.length && j < creditors.length) {
+    let settle = Math.min(debtors[i][1], creditors[j][1]);
+    transactions.push(`${debtors[i][0]} pays ₹${settle.toFixed(2)} to ${creditors[j][0]}`);
+    debtors[i][1]   -= settle;
+    creditors[j][1] -= settle;
+    if (debtors[i][1]   < 1e-6) i++;
+    if (creditors[j][1] < 1e-6) j++;
+  }
+
+  return {transactions, balance};
+}
+
+// NEW: Copy results as plain text
+function copyText() {
+  const text = document.getElementById('output').innerText;
+  if (!text.trim()) { alert("Compute settlements first!"); return; }
+  const btn = document.getElementById('copyBtn');
+  const orig = btn.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerText = '✅ Copied!';
+    setTimeout(() => btn.innerText = orig, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.innerText = '✅ Copied!';
+    setTimeout(() => btn.innerText = orig, 2000);
+  });
+}
+
+// NEW: Download results as image
+function downloadImage() {
+  const output = document.getElementById('output');
+  if (!output.innerText.trim()) { alert("Compute settlements first!"); return; }
+  const btn = document.getElementById('dlBtn');
+  const orig = btn.innerText;
+  btn.innerText = '⏳ Generating...';
+  btn.disabled = true;
+  document.getElementById('resultActions').style.visibility = 'hidden';
+  html2canvas(document.getElementById('resultsCard'), {
+    scale: 2, backgroundColor: '#ffffff', useCORS: true
+  }).then(canvas => {
+    document.getElementById('resultActions').style.visibility = 'visible';
+    btn.innerText = orig;
+    btn.disabled = false;
+    const link = document.createElement('a');
+    link.download = 'fairsplit-results.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }).catch(() => {
+    document.getElementById('resultActions').style.visibility = 'visible';
+    btn.innerText = orig;
+    btn.disabled = false;
+    alert("Image failed. Try Copy as Text instead.");
+  });
+}
+</script>
+
+</body>
+</html>
