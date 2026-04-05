@@ -247,8 +247,13 @@ def minimize_transactions(expenses, custom_debts=None, already_paid=None):
         balance[ap["to"]]   -= ap["amount"]
 
     # Step 4: Separate debtors and creditors
-    debtors   = [[p, round(-amt, 2)] for p, amt in balance.items() if amt < -1e-6]
-    creditors = [[p, round( amt, 2)] for p, amt in balance.items() if amt >  1e-6]
+    
+    # debtors   = [[p, round(-amt, 2)] for p, amt in balance.items() if amt < -1e-6]
+    # creditors = [[p, round( amt, 2)] for p, amt in balance.items() if amt >  1e-6]
+
+    # AFTER:
+    debtors   = sorted([[p, round(-amt, 2)] for p, amt in balance.items() if amt < -1e-6], key=lambda x: -x[1])
+    creditors = sorted([[p, round( amt, 2)] for p, amt in balance.items() if amt >  1e-6], key=lambda x: -x[1])
 
     i, j = 0, 0
     transactions = []

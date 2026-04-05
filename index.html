@@ -519,8 +519,8 @@ function minimizeTransactions(expenses, customDebts = [], alreadyPaid = []) {
     balance[ap.to]   = (balance[ap.to]   || 0) - ap.amt;
   });
 
-  let debtors   = Object.entries(balance).filter(([_, a]) => a < 0).map(([p, a]) => [p, -a]);
-  let creditors = Object.entries(balance).filter(([_, a]) => a > 0).map(([p, a]) => [p,  a]);
+  let debtors   = Object.entries(balance).filter(([_, a]) => a < 0).map(([p, a]) => [p, -a]).sort((a,b) => b[1]-a[1]);
+  let creditors = Object.entries(balance).filter(([_, a]) => a > 0).map(([p, a]) => [p,  a]).sort((a,b) => b[1]-a[1]);
   let i = 0, j = 0, transactions = [];
 
   while (i < debtors.length && j < creditors.length) {
