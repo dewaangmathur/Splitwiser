@@ -113,8 +113,6 @@
     flex-wrap: wrap;
   }
   .trip-date-row label { font-size: 14px; font-weight: 600; color: #374151; }
-
-  /* NEW: select all btn */
   .select-all-btn {
     background: linear-gradient(90deg,#0891b2,#0e7490);
     padding: 7px 14px;
@@ -122,6 +120,43 @@
     margin-bottom: 6px;
   }
   .select-all-btn:hover { background: linear-gradient(90deg,#0e7490,#0891b2); }
+
+  /* Guardian tag chips */
+  .guardian-info {
+    background: #ede9fe;
+    border: 1px solid #c4b5fd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 13px;
+    color: #5b21b6;
+  }
+  .guardian-warning {
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 13px;
+    color: #854d0e;
+  }
+  .syntax-hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+
+  /* Results sections */
+  .result-section {
+    margin-bottom: 10px;
+  }
+  .result-section-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin: 12px 0 4px 0;
+    color: #1e3a8a;
+  }
 
   @media (max-width: 600px) {
     body { padding: 10px; }
@@ -133,9 +168,6 @@
     pre { font-size: 14px; }
     .trip-date-row { flex-direction: column; align-items: flex-start; }
   }
-
-  .balance-positive { color: green; font-weight: 600; }
-  .balance-negative { color: red; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -144,14 +176,20 @@
 
 <!-- Members + Trip Date -->
 <div class="card">
-  <label>Provide member names (comma or space separated): </label><br>
-  <input id="members" placeholder="e.g. Name_1, Name_2, Name_3">
+  <label><strong>Member names</strong> (comma or space separated):</label><br>
+  <input id="members" placeholder="e.g. aman{saloni}, saloni, ram" style="width:95%;">
+  <div class="syntax-hint">
+    🔗 <strong>Guardian Format:</strong> <code>User{Guardian}</code> → the user's balance is handled by the guardian &nbsp;
+    🔗 <code>User{Guardian1, Guardian2}</code> → balance is split equally among listed guardians<br>
+    ⚠️ <strong>Note:</strong> If any guardian is not found in the system, the <code>{}</code> is ignored and the user is processed normally.
+  </div>
   <button onclick="setMembers()">Set Members</button>
+  <div id="memberCount">Members added: 0</div>
+  <div id="guardianDisplay"></div>
   <div class="trip-date-row">
     <label>📅 Trip / Group Date:</label>
     <input type="date" id="tripDate">
   </div>
-  <div id="memberCount">Members added: 0</div>
 </div>
 
 <div id="groups"></div>
@@ -162,7 +200,6 @@
 <div class="card">
   <h3>💸 Unequal Dues (Optional Custom Debts)</h3>
   <p style="color:#555;font-size:14px;margin-top:0;">
-    Add debts between people outside of any expense group.<br>
     <strong>From</strong> = person who <strong>owes money</strong> &nbsp;|&nbsp;
     <strong>To</strong> = person who <strong>receives money</strong>
   </p>
@@ -174,7 +211,6 @@
 <div class="card">
   <h3>✅ Already Paid (Optional)</h3>
   <p style="color:#555;font-size:14px;margin-top:0;">
-    Record payments already made outside the app, so they get counted in settlements.<br>
     <strong>From</strong> = person who <strong>already paid</strong> &nbsp;|&nbsp;
     <strong>To</strong> = person who <strong>received that payment</strong>
   </p>
@@ -184,7 +220,7 @@
 
 <button onclick="compute()">💳 Compute Settlements</button>
 
-<!-- Results with Copy + Download buttons -->
+<!-- Results -->
 <div class="card" id="resultsCard">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
     <h3 style="margin:0;">⚖ Results</h3>
@@ -200,11 +236,52 @@
 
 <script>
 let members = [];
+let guardianMap = {};   // { memberName: [guardian1, guardian2, ...] } (validated)
 let groupCount = 0;
 let customDebtCount = 0;
 let deletedGroups = new Set();
 let apCounters = { global: 0 };
 let deletedAPs = new Set();
+
+// ─── Guardian parsing ───────────────────────────────────────────
+
+function parseMembersInput(raw) {
+  const result = [];
+  const rawGuardianMap = {};
+  const tokens = raw.split(/[\s,]+/).filter(Boolean);
+
+  for (let token of tokens) {
+    if (token.includes('{')) {
+      const [name, rest] = token.split('{');
+      const guardians = rest.replace('}', '').split(',').map(g => g.trim()).filter(Boolean);
+      if (name) {
+        result.push(name);
+        if (guardians.length) rawGuardianMap[name] = guardians;
+      }
+    } else if (token) {
+      result.push(token);
+    }
+  }
+  return { members: result, rawGuardianMap };
+}
+
+function validateGuardians(members, rawGuardianMap) {
+  const memberSet = new Set(members);
+  const guardianMap = {};
+  const warnings = [];
+
+  for (const [person, guardians] of Object.entries(rawGuardianMap)) {
+    const invalid = guardians.filter(g => !memberSet.has(g));
+    if (invalid.length) {
+      warnings.push(`⚠️ Guardian name(s) [${invalid.join(', ')}] for "${person}" not found in members — treating "${person}" as a normal member.`);
+    } else {
+      guardianMap[person] = guardians;
+    }
+  }
+  return { guardianMap, warnings };
+}
+
+// ─── UI helpers ─────────────────────────────────────────────────
 
 function splitNames(input) {
   return input.split(/[,\s]+/).map(n => n.trim()).filter(Boolean);
@@ -223,11 +300,37 @@ function todayISO() {
 function setMembers() {
   const raw = document.getElementById('members').value.trim();
   if (!raw) { alert("Please enter at least one member."); return; }
-  members = splitNames(raw);
-  document.getElementById('memberCount').innerText = `Members added: ${members.length} → ${members.join(", ")}`;
+
+  const parsed = parseMembersInput(raw);
+  const validated = validateGuardians(parsed.members, parsed.rawGuardianMap);
+
+  members = parsed.members;
+  guardianMap = validated.guardianMap;
+
+  document.getElementById('memberCount').innerText =
+    `Members added: ${members.length} → ${members.join(", ")}`;
+
+  // Show guardian info / warnings
+  const display = document.getElementById('guardianDisplay');
+  display.innerHTML = '';
+
+  if (validated.warnings.length) {
+    validated.warnings.forEach(w => {
+      const d = document.createElement('div');
+      d.className = 'guardian-warning';
+      d.textContent = w;
+      display.appendChild(d);
+    });
+  }
+
+  if (Object.keys(guardianMap).length) {
+    const d = document.createElement('div');
+    d.className = 'guardian-info';
+    d.innerHTML = `<strong>🔗 ${Object.keys(guardianMap).length} guardian assignment(s) confirmed.</strong>`;
+    display.appendChild(d);
+  }
 }
 
-// NEW: toggle all checkboxes in a group
 function selectAll(groupNum) {
   const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
   const allChecked = Array.from(checkboxes).every(cb => cb.checked);
@@ -243,12 +346,12 @@ function addGroup() {
   div.className = 'card fade-in';
   div.id = `group_${groupCount}`;
 
-  let checkboxesHTML = members.map(m =>
+  const checkboxesHTML = members.map(m =>
     `<label><input type="checkbox" class="participantCheckbox" value="${m}" onchange="updateParticipants(${groupCount})"> ${m}</label>`
   ).join(' ');
 
   div.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
       <div class="group-header">🧾 Expense Group #${groupCount}</div>
       <button onclick="deleteGroup(${groupCount})" class="delete-btn">🗑️ Delete</button>
     </div>
@@ -374,6 +477,87 @@ function updatePayers(groupNum) {
   }
 }
 
+// ─── Core math ──────────────────────────────────────────────────
+
+function minimizeTransactions(expenses, customDebts = [], alreadyPaid = []) {
+  let balance = {};
+
+  expenses.forEach(exp => {
+    const totalAmounts = {};
+    exp.payments.forEach(p => {
+      balance[p.name] = balance[p.name] || 0;
+      totalAmounts[p.name] = (totalAmounts[p.name] || 0) + p.amt;
+    });
+    const total = exp.payments.reduce((acc, p) => acc + p.amt, 0);
+    const share = total / exp.participants.length;
+    exp.participants.forEach(p => { balance[p] = balance[p] || 0; });
+    for (let p of exp.participants) {
+      balance[p] += (totalAmounts[p] || 0) - share;
+    }
+  });
+
+  customDebts.forEach(debt => {
+    balance[debt.from] = (balance[debt.from] || 0) - debt.amt;
+    balance[debt.to]   = (balance[debt.to]   || 0) + debt.amt;
+  });
+
+  alreadyPaid.forEach(ap => {
+    balance[ap.from] = (balance[ap.from] || 0) + ap.amt;
+    balance[ap.to]   = (balance[ap.to]   || 0) - ap.amt;
+  });
+
+  return { transactions: settle(balance), balance };
+}
+
+function settle(balance) {
+  let debtors   = Object.entries(balance).filter(([_,a]) => a < -1e-6).map(([p,a]) => [p,-a]).sort((a,b) => b[1]-a[1]);
+  let creditors = Object.entries(balance).filter(([_,a]) => a >  1e-6).map(([p,a]) => [p, a]).sort((a,b) => b[1]-a[1]);
+  let i = 0, j = 0, transactions = [];
+
+  while (i < debtors.length && j < creditors.length) {
+    let s = Math.min(debtors[i][1], creditors[j][1]);
+    transactions.push({ from: debtors[i][0], amt: s, to: creditors[j][0] });
+    debtors[i][1]   -= s;
+    creditors[j][1] -= s;
+    if (debtors[i][1]   < 1e-6) i++;
+    if (creditors[j][1] < 1e-6) j++;
+  }
+  return transactions;
+}
+
+function aggregateWithGuardians(balance, guardianMap) {
+  const notes = [];
+  const agg = Object.fromEntries(Object.entries(balance).map(([k,v]) => [k, Math.round(v*100)/100]));
+
+  for (const [person, guardians] of Object.entries(guardianMap)) {
+    const personBal = Math.round((agg[person] || 0) * 100) / 100;
+    if (Math.abs(personBal) < 1e-6) {
+      notes.push({ type: 'info', text: `✅ ${person} was already settled — no transfer needed.` });
+      continue;
+    }
+
+    const perGuardian = Math.round((personBal / guardians.length) * 100) / 100;
+    const remainder   = Math.round((personBal - perGuardian * guardians.length) * 100) / 100;
+
+    guardians.forEach((guardian, idx) => {
+      const portion = Math.round((perGuardian + (idx === 0 ? remainder : 0)) * 100) / 100;
+      agg[guardian] = Math.round(((agg[guardian] || 0) + portion) * 100) / 100;
+
+      if (personBal > 0) {
+        notes.push({ type: 'credit', text: `💚 ${guardian} receives ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}` });
+      } else {
+        notes.push({ type: 'debit', text: `💸 ${guardian} pays ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}` });
+      }
+    });
+
+    agg[person] = 0;
+  }
+
+  return { aggTransactions: settle(agg), notes, aggBalance: agg };
+}
+
+// ─── Compute & render ────────────────────────────────────────────
+
 function compute() {
   const tripDate = formatDate(document.getElementById('tripDate').value);
   let expenses = [];
@@ -399,15 +583,11 @@ function compute() {
   let customDebts = [];
   for (let i = 1; i <= customDebtCount; i++) {
     const fromEl = document.getElementById(`debtFrom_${i}`);
-    const toEl   = document.getElementById(`debtTo_${i}`);
-    const amtEl  = document.getElementById(`debtAmt_${i}`);
-    const descEl = document.getElementById(`debtDesc_${i}`);
-    const dateEl = document.getElementById(`debtDate_${i}`);
-    if (!fromEl || !toEl || !amtEl) continue;
-    const from = fromEl.value, to = toEl.value;
-    const amt  = parseFloat(amtEl.value) || 0;
-    const desc = descEl ? descEl.value.trim() : '';
-    const date = formatDate(dateEl ? dateEl.value : '');
+    if (!fromEl) continue;
+    const from = fromEl.value, to = document.getElementById(`debtTo_${i}`).value;
+    const amt  = parseFloat(document.getElementById(`debtAmt_${i}`).value) || 0;
+    const desc = document.getElementById(`debtDesc_${i}`).value.trim();
+    const date = formatDate(document.getElementById(`debtDate_${i}`).value);
     if (amt > 0 && from !== to) customDebts.push({from, to, amt, desc, date});
   }
 
@@ -415,19 +595,15 @@ function compute() {
   for (let i = 1; i <= apCounters.global; i++) {
     if (deletedAPs.has(i)) continue;
     const fromEl = document.getElementById(`apFrom_${i}`);
-    const toEl   = document.getElementById(`apTo_${i}`);
-    const amtEl  = document.getElementById(`apAmt_${i}`);
-    const descEl = document.getElementById(`apDesc_${i}`);
-    const dateEl = document.getElementById(`apDate_${i}`);
-    if (!fromEl || !toEl || !amtEl) continue;
-    const from = fromEl.value, to = toEl.value;
-    const amt  = parseFloat(amtEl.value) || 0;
-    const desc = descEl ? descEl.value.trim() : '';
-    const date = formatDate(dateEl ? dateEl.value : '');
+    if (!fromEl) continue;
+    const from = fromEl.value, to = document.getElementById(`apTo_${i}`).value;
+    const amt  = parseFloat(document.getElementById(`apAmt_${i}`).value) || 0;
+    const desc = document.getElementById(`apDesc_${i}`).value.trim();
+    const date = formatDate(document.getElementById(`apDate_${i}`).value);
     if (amt > 0 && from !== to) allAlreadyPaid.push({from, to, amt, desc: desc || 'Already paid', date});
   }
 
-  // Build results output
+  // ── Build output text ──────────────────────────────────────────
   let out = "";
   if (tripDate) out += `📅 Trip / Group Date: ${tripDate}\n${'─'.repeat(38)}\n\n`;
 
@@ -475,67 +651,46 @@ function compute() {
     out += "\n";
   }
 
-  const {transactions, balance} = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
+  const { transactions, balance } = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
 
   out += "⚖ Final Balances:\n";
   members.forEach(p => {
-    const amt = (balance[p] || 0).toFixed(2);
-    if      (amt > 0)  out += `   ${p}: gets ₹${amt}\n`;
-    else if (amt < 0)  out += `   ${p}: owes ₹${(-amt).toFixed(2)}\n`;
-    else               out += `   ${p}: settled up ✅\n`;
+    const raw = balance[p] || 0;
+    const amt = Math.round(raw * 100) / 100;
+    if      (amt >  0.005) out += `   ${p}: gets ₹${amt.toFixed(2)}\n`;
+    else if (amt < -0.005) out += `   ${p}: owes ₹${(-amt).toFixed(2)}\n`;
+    else                   out += `   ${p}: settled up ✅\n`;
   });
 
   out += "\n💳 Simplified Transactions:\n";
   if (transactions.length === 0) out += "   All settled up! 🎉";
-  else transactions.forEach(t => out += `   ${t}\n`);
+  else transactions.forEach(t => out += `   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
+
+  // ── Guardian aggregation section ───────────────────────────────
+  if (Object.keys(guardianMap).length > 0) {
+    const { aggTransactions, notes } = aggregateWithGuardians(balance, guardianMap);
+
+    out += `\n${'─'.repeat(38)}\n`;
+    out += "🔗 Aggregated Transactions (After Guardian Transfer)\n";
+    out += `${'─'.repeat(38)}\n`;
+
+    out += "\n📋 Transfer Notes:\n";
+    if (notes.length) {
+      notes.forEach(n => out += `   ${n.text}\n`);
+    } else {
+      out += "   (no transfers needed)\n";
+    }
+
+    out += "\n💳 Aggregated Simplified Transactions:\n";
+    if (aggTransactions.length === 0) out += "   All settled up! 🎉";
+    else aggTransactions.forEach(t => out += `   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
+  }
 
   document.getElementById("output").innerText = out;
 }
 
-function minimizeTransactions(expenses, customDebts = [], alreadyPaid = []) {
-  let balance = {};
+// ─── Copy & Download ─────────────────────────────────────────────
 
-  expenses.forEach(exp => {
-    const totalAmounts = {};
-    exp.payments.forEach(p => {
-      balance[p.name] = balance[p.name] || 0;
-      totalAmounts[p.name] = (totalAmounts[p.name] || 0) + p.amt;
-    });
-    const total = exp.payments.reduce((acc, p) => acc + p.amt, 0);
-    const share = total / exp.participants.length;
-    exp.participants.forEach(p => { balance[p] = balance[p] || 0; });
-    for (let p of exp.participants) {
-      balance[p] += (totalAmounts[p] || 0) - share;
-    }
-  });
-
-  customDebts.forEach(debt => {
-    balance[debt.from] = (balance[debt.from] || 0) - debt.amt;
-    balance[debt.to]   = (balance[debt.to]   || 0) + debt.amt;
-  });
-
-  alreadyPaid.forEach(ap => {
-    balance[ap.from] = (balance[ap.from] || 0) + ap.amt;
-    balance[ap.to]   = (balance[ap.to]   || 0) - ap.amt;
-  });
-
-  let debtors   = Object.entries(balance).filter(([_, a]) => a < 0).map(([p, a]) => [p, -a]).sort((a,b) => b[1]-a[1]);
-  let creditors = Object.entries(balance).filter(([_, a]) => a > 0).map(([p, a]) => [p,  a]).sort((a,b) => b[1]-a[1]);
-  let i = 0, j = 0, transactions = [];
-
-  while (i < debtors.length && j < creditors.length) {
-    let settle = Math.min(debtors[i][1], creditors[j][1]);
-    transactions.push(`${debtors[i][0]} pays ₹${settle.toFixed(2)} to ${creditors[j][0]}`);
-    debtors[i][1]   -= settle;
-    creditors[j][1] -= settle;
-    if (debtors[i][1]   < 1e-6) i++;
-    if (creditors[j][1] < 1e-6) j++;
-  }
-
-  return {transactions, balance};
-}
-
-// NEW: Copy results as plain text
 function copyText() {
   const text = document.getElementById('output').innerText;
   if (!text.trim()) { alert("Compute settlements first!"); return; }
@@ -556,7 +711,6 @@ function copyText() {
   });
 }
 
-// NEW: Download results as image
 function downloadImage() {
   const output = document.getElementById('output');
   if (!output.innerText.trim()) { alert("Compute settlements first!"); return; }
