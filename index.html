@@ -327,6 +327,7 @@
   .hidden { display: none; }
   .group-header-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
   .receipt-settled-sm { font-size: 17px; }
+  .matrix-scroll-wrap { overflow-x: auto; }
 
   /* ── Extracted from inline styles ── */
   .site-nav {
@@ -372,6 +373,127 @@
   .agg-txn-row .txn-to { color: #14532d; }
   .agg-txn-row .txn-amt { background: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
 
+  /* ── Payment Restrictions Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: fadeInUp 0.25s ease;
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 6px;
+  }
+  .modal-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .restriction-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .restriction-matrix th {
+    background: #eff6ff;
+    color: #1e40af;
+    font-weight: 700;
+    padding: 8px 10px;
+    text-align: center;
+    border: 1px solid #bfdbfe;
+  }
+  .restriction-matrix td {
+    padding: 7px 10px;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+  }
+  .restriction-matrix tr:hover td { background: #f9fafb; }
+  .restriction-matrix td:first-child {
+    font-weight: 600;
+    color: #374151;
+    text-align: left;
+    background: #f8fafc;
+  }
+  .restriction-matrix input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #ef4444;
+  }
+  .cell-self {
+    background: #f3f4f6;
+    color: #9ca3af;
+    font-size: 18px;
+  }
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-modal-cancel {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .btn-modal-cancel:hover { background: #d1d5db; transform: none; box-shadow: none; }
+  .btn-modal-save {
+    background: linear-gradient(90deg,#dc2626,#b91c1c);
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .btn-modal-save:hover { background: linear-gradient(90deg,#b91c1c,#dc2626); }
+  .btn-restrictions {
+    background: linear-gradient(90deg,#dc2626,#b91c1c);
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  .btn-restrictions:hover { background: linear-gradient(90deg,#b91c1c,#dc2626); }
+  .restriction-badge {
+    display: inline-block;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .restriction-note {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #991b1b;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
   @media (max-width: 600px) {
     body { padding: 10px; }
     input, select, button, textarea { width: 100%; font-size: 16px; box-sizing: border-box; }
@@ -449,6 +571,7 @@
 </div>
 
 <button onclick="compute()">💳 Compute Settlements</button>
+<button class="btn-restrictions" onclick="openRestrictionsModal()">🚫 Payment Restrictions <span class="restriction-badge hidden" id="restrictionBadge">0</span></button>
 
 <!-- Results -->
 <div class="card" id="resultsCard">
@@ -484,6 +607,24 @@
     </div>
   </div>
 
+</div>
+
+<!-- ── Payment Restrictions Modal ── -->
+<div class="modal-overlay" id="restrictionsModal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-title">🚫 Payment Restrictions</div>
+    <div class="modal-subtitle">
+      Check a cell to <strong>block</strong> that payment path.<br>
+      Row = who pays &nbsp;|&nbsp; Column = who receives.<br>
+      Blocked paths are rerouted through intermediaries automatically.
+    </div>
+    <div class="restriction-note hidden" id="restrictionNote"></div>
+    <div id="restrictionMatrixWrap" class="matrix-scroll-wrap"></div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeRestrictionsModal()">Cancel</button>
+      <button class="btn-modal-save" onclick="saveRestrictions()">💾 Save Restrictions</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -535,6 +676,8 @@ function setMembers() {
   const validated = validateGuardians(parsed.members, parsed.rawGuardianMap);
   members = parsed.members;
   guardianMap = validated.guardianMap;
+  restrictions = new Set(); // reset restrictions when members change
+  document.getElementById('restrictionBadge').style.display = 'none';
   document.getElementById('memberCount').innerText = `Members added: ${members.length} → ${members.join(", ")}`;
   const display = document.getElementById('guardianDisplay');
   display.innerHTML = '';
@@ -848,7 +991,9 @@ function compute() {
     out+="\n";
   }
 
-  const { transactions, balance } = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
+  const { transactions: rawTransactions, balance } = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
+  const transactions = settleWithRestrictions(balance, members);
+  const restrictionsActive = restrictions.size > 0;
 
   out+="⚖ Final Balances:\n";
   members.forEach(p=>{
@@ -858,9 +1003,10 @@ function compute() {
     else out+=`   ${p}: settled up ✅\n`;
   });
 
-  out+="\n💳 Simplified Transactions:\n";
+  out+=`\n💳 Simplified Transactions${restrictionsActive?' (with payment restrictions)':''}:\n`;
   if(transactions.length===0) out+="   All settled up! 🎉";
   else transactions.forEach(t=>out+=`   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
+  if(restrictionsActive) out+=`   (🚫 ${restrictions.size} restriction(s) applied — payments rerouted via intermediaries)\n`;
 
   let aggTransactions = [];
   const hasGuardians = Object.keys(guardianMap).length > 0;
@@ -879,7 +1025,167 @@ function compute() {
   }
 
   document.getElementById("output").innerText = out;
+  document.querySelector('.receipt-banner-sub').textContent = restrictionsActive
+    ? `🚫 Rerouted via payment restrictions`
+    : `What everyone actually needs to pay`;
   renderReceipt(transactions, aggTransactions, hasGuardians);
+}
+
+// ── Payment Restrictions ────────────────────────────────────────
+
+let restrictions = new Set(); // Set of "A|B" meaning A cannot pay B
+
+function restrictionKey(a, b) { return `${a}|${b}`; }
+function isRestricted(a, b) { return restrictions.has(restrictionKey(a, b)); }
+
+function openRestrictionsModal() {
+  if (members.length < 2) { alert("Add members first!"); return; }
+  buildMatrix();
+  document.getElementById('restrictionsModal').classList.add('active');
+}
+
+function closeRestrictionsModal() {
+  document.getElementById('restrictionsModal').classList.remove('active');
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('restrictionsModal')) closeRestrictionsModal();
+}
+
+function buildMatrix() {
+  const wrap = document.getElementById('restrictionMatrixWrap');
+  let html = '<table class="restriction-matrix"><thead><tr><th>Pays ↓ &nbsp; Receives →</th>';
+  members.forEach(m => { html += `<th>${m}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  members.forEach(from => {
+    html += `<tr><td>${from}</td>`;
+    members.forEach(to => {
+      if (from === to) {
+        html += `<td class="cell-self">—</td>`;
+      } else {
+        const key = restrictionKey(from, to);
+        const checked = restrictions.has(key) ? 'checked' : '';
+        html += `<td><input type="checkbox" ${checked} aria-label="Block ${from} paying ${to}" id="r_${from}_${to}" onchange="updateRestrictionNote()"></td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  updateRestrictionNote();
+}
+
+function updateRestrictionNote() {
+  const note = document.getElementById('restrictionNote');
+  const blocked = getCheckedRestrictions();
+  if (blocked.length === 0) { note.classList.add('hidden'); return; }
+  note.classList.remove('hidden');
+  note.innerHTML = `⚠️ <strong>${blocked.length} restriction(s) active.</strong> The engine will reroute payments through intermediaries. If no valid route exists, the original path is used as fallback.`;
+}
+
+function getCheckedRestrictions() {
+  const blocked = [];
+  members.forEach(from => {
+    members.forEach(to => {
+      if (from === to) return;
+      const cb = document.getElementById(`r_${from}_${to}`);
+      if (cb && cb.checked) blocked.push(restrictionKey(from, to));
+    });
+  });
+  return blocked;
+}
+
+function saveRestrictions() {
+  restrictions = new Set(getCheckedRestrictions());
+  // Update badge
+  const badge = document.getElementById('restrictionBadge');
+  if (restrictions.size > 0) {
+    badge.textContent = restrictions.size;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+  closeRestrictionsModal();
+}
+
+// ── Constrained Settlement Algorithm ───────────────────────────
+// When a direct A→B payment is blocked, find a route A→X→B through an intermediary.
+// Uses BFS to find shortest allowed path, then chains the payments.
+
+function findPath(from, to, allMembers) {
+  // BFS: find shortest path from 'from' to 'to' respecting restrictions
+  if (!isRestricted(from, to)) return [from, to]; // direct allowed
+
+  const queue = [[from, [from]]];
+  const visited = new Set([from]);
+
+  while (queue.length) {
+    const [cur, path] = queue.shift();
+    for (const next of allMembers) {
+      if (next === cur || visited.has(next)) continue;
+      if (isRestricted(cur, next)) continue;
+      const newPath = [...path, next];
+      if (next === to) return newPath;
+      visited.add(next);
+      queue.push([next, newPath]);
+    }
+  }
+  return [from, to]; // fallback: no route found, use direct
+}
+
+function settleWithRestrictions(balance, allMembers) {
+  if (restrictions.size === 0) return settle(balance); // no restrictions, normal settle
+
+  let debtors   = Object.entries(balance).filter(([_,a])=>a<-1e-6).map(([p,a])=>[p,-a]).sort((a,b)=>b[1]-a[1]);
+  let creditors = Object.entries(balance).filter(([_,a])=>a>1e-6).map(([p,a])=>[p,a]).sort((a,b)=>b[1]-a[1]);
+
+  // Build adjusted balance including intermediary flows
+  const flow = {}; // { "A|B": amount } — net flow from A to B
+  const addFlow = (from, to, amt) => {
+    const k = restrictionKey(from, to);
+    flow[k] = (flow[k] || 0) + amt;
+  };
+
+  let i = 0, j = 0;
+  // Work on copies
+  debtors   = debtors.map(d=>[...d]);
+  creditors = creditors.map(c=>[...c]);
+
+  while (i < debtors.length && j < creditors.length) {
+    const s = Math.round(Math.min(debtors[i][1], creditors[j][1]) * 100) / 100;
+    if (s > 0) {
+      const path = findPath(debtors[i][0], creditors[j][0], allMembers);
+      // Chain the payment along the path
+      for (let k = 0; k < path.length - 1; k++) {
+        addFlow(path[k], path[k+1], s);
+      }
+    }
+    debtors[i][1]   = Math.round((debtors[i][1]   - s) * 100) / 100;
+    creditors[j][1] = Math.round((creditors[j][1] - s) * 100) / 100;
+    if (debtors[i][1]   < 1e-6) i++;
+    if (creditors[j][1] < 1e-6) j++;
+  }
+
+  // Convert flow map to transaction list, netting out any A→B and B→A
+  const txnMap = {};
+  for (const [key, amt] of Object.entries(flow)) {
+    const [from, to] = key.split('|');
+    const rev = restrictionKey(to, from);
+    if (txnMap[rev]) {
+      // Net off
+      if (txnMap[rev] > amt) { txnMap[rev] = Math.round((txnMap[rev] - amt)*100)/100; }
+      else if (txnMap[rev] < amt) { txnMap[key] = Math.round((amt - txnMap[rev])*100)/100; delete txnMap[rev]; }
+      else { delete txnMap[rev]; }
+    } else {
+      txnMap[key] = (txnMap[key] || 0) + amt;
+      txnMap[key] = Math.round(txnMap[key]*100)/100;
+    }
+  }
+
+  return Object.entries(txnMap)
+    .filter(([_, a]) => a > 1e-6)
+    .map(([key, amt]) => { const [from, to] = key.split('|'); return {from, amt, to}; });
 }
 
 function copyText() {
