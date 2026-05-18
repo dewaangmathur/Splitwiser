@@ -122,7 +122,6 @@
   }
   .select-all-btn:hover { background: linear-gradient(90deg,#0e7490,#0891b2); }
 
-  /* Guardian tag chips */
   .guardian-info {
     background: #ede9fe;
     border: 1px solid #c4b5fd;
@@ -148,16 +147,230 @@
     line-height: 1.6;
   }
 
-  /* Results sections */
-  .result-section {
-    margin-bottom: 10px;
-  }
+  .result-section { margin-bottom: 10px; }
   .result-section-title {
     font-weight: 700;
     font-size: 15px;
     margin: 12px 0 4px 0;
     color: #1e3a8a;
   }
+
+  /* ── Receipt-style Final Transactions Box ── */
+  #finalReceiptWrap {
+    margin-top: 18px;
+    display: none;
+  }
+
+  .receipt-card {
+    border: 2.5px solid #b45309;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(180,83,9,0.18), 0 2px 8px rgba(0,0,0,0.10);
+    background: #fffbf0;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Torn-edge top strip */
+  .receipt-banner {
+    background: linear-gradient(90deg, #b45309, #d97706, #ca8a04);
+    padding: 14px 22px 12px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+  .receipt-banner::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -8px;
+    left: 0; right: 0;
+    height: 16px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='16'%3E%3Cpath d='M0 0 Q7.5 16 15 0 Q22.5 16 30 0' fill='%23fffbf0'/%3E%3C/svg%3E") repeat-x bottom;
+    background-size: 30px 16px;
+    z-index: 2;
+  }
+  .receipt-banner-icon {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  .receipt-banner-title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    line-height: 1.15;
+  }
+  .receipt-banner-sub {
+    color: #fef3c7;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  .receipt-body {
+    padding: 24px 22px 20px 22px;
+    margin-top: 4px;
+  }
+
+  /* Dashed divider */
+  .receipt-divider {
+    border: none;
+    border-top: 2px dashed #d97706;
+    margin: 14px 0;
+    opacity: 0.5;
+  }
+
+  /* Each transaction row */
+  /* Column header labels */
+  .receipt-col-labels {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    margin-bottom: 6px;
+  }
+  .col-label-from {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #92400e;
+    min-width: 70px;
+    opacity: 0.75;
+  }
+  .col-label-spacer { flex-shrink: 0; width: 18px; }
+  .col-label-to {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #14532d;
+    flex: 1;
+    opacity: 0.75;
+  }
+  .col-label-amt {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #b45309;
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  .txn-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1.5px solid #fde68a;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(180,83,9,0.06);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .txn-row:hover {
+    box-shadow: 0 4px 14px rgba(180,83,9,0.13);
+    transform: translateY(-1px);
+  }
+  .txn-from {
+    font-weight: 700;
+    font-size: 15px;
+    color: #92400e;
+    min-width: 70px;
+  }
+  .txn-arrow {
+    font-size: 18px;
+    color: #d97706;
+    flex-shrink: 0;
+  }
+  .txn-to {
+    font-weight: 700;
+    font-size: 15px;
+    color: #14532d;
+    flex: 1;
+  }
+  .txn-amt {
+    font-size: 18px;
+    font-weight: 700;
+    color: #b45309;
+    background: #fef9c3;
+    border: 1.5px solid #fde68a;
+    border-radius: 8px;
+    padding: 4px 12px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .receipt-settled {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #16a34a;
+    padding: 18px 0 8px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .receipt-footer {
+    text-align: center;
+    font-size: 11.5px;
+    color: #92400e;
+    opacity: 0.65;
+    padding-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .hidden { display: none; }
+  .group-header-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .receipt-settled-sm { font-size: 17px; }
+
+  /* ── Extracted from inline styles ── */
+  .site-nav {
+    background: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 12px 24px;
+    margin: -15px -15px 25px -15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .site-nav-logo { width:40px; height:40px; flex-shrink:0; }
+  .site-nav-title { font-family:'Poppins',sans-serif; font-weight:700; font-size:20px; color:#2563eb; line-height:1.1; }
+  .site-nav-sub  { font-family:'Poppins',sans-serif; font-size:11px; color:#6b7280; line-height:1.1; }
+  .results-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+  .results-header h3 { margin:0; }
+  .result-actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-copy     { background:linear-gradient(90deg,#059669,#047857); padding:9px 18px; font-size:14px; }
+  .btn-copy:hover { background:linear-gradient(90deg,#047857,#059669); }
+  .btn-download { background:linear-gradient(90deg,#7c3aed,#6d28d9); padding:9px 18px; font-size:14px; }
+  .btn-download:hover { background:linear-gradient(90deg,#6d28d9,#7c3aed); }
+  .section-hint { color:#555; font-size:14px; margin-top:0; }
+  .input-full   { width:95%; }
+  .input-short  { width:100px; }
+  .input-med    { width:170px; }
+  .input-date-w { width:155px; }
+  .input-desc   { width:160px; }
+  .input-num-sm { width:50px; }
+  /* Aggregated section inside receipt */
+  .agg-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7c3aed;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 16px 0 8px 0;
+  }
+  .agg-txn-row {
+    border-color: #ddd6fe;
+  }
+  .agg-txn-row .txn-from { color: #4c1d95; }
+  .agg-txn-row .txn-arrow { color: #7c3aed; }
+  .agg-txn-row .txn-to { color: #14532d; }
+  .agg-txn-row .txn-amt { background: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
 
   @media (max-width: 600px) {
     body { padding: 10px; }
@@ -168,29 +381,33 @@
     .group-header { font-size: 20px; }
     pre { font-size: 14px; }
     .trip-date-row { flex-direction: column; align-items: flex-start; }
+    .receipt-banner-title { font-size: 17px; }
+    .txn-from, .txn-to { font-size: 13px; min-width: 55px; }
+    .txn-amt { font-size: 15px; padding: 3px 9px; }
   }
 </style>
 </head>
 <body>
 
-<nav style="background:white;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:12px 24px;margin:-15px -15px 25px -15px;display:flex;align-items:center;gap:12px;">
-  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 502.614 502.614" style="width:40px;height:40px;flex-shrink:0;" xml:space="preserve">
+<nav class="site-nav">
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 502.614 502.614" class="site-nav-logo" xml:space="preserve">
+    <defs><style>.svg-c1{fill:#7EE1E6}.svg-c2{fill:#FFE079}.svg-c3{fill:#51565F}</style></defs>
     <g transform="translate(1 3)">
-      <path style="fill:#7EE1E6;" d="M387.267,427.507c14.507,0,25.6,11.093,25.6,25.6c0,14.507-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6c0-8.533,4.267-16.213,10.24-20.48C376.174,429.214,381.294,427.507,387.267,427.507z M28.867,171.507c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6s-25.6-11.093-25.6-25.6S14.36,171.507,28.867,171.507z M472.6,171.507c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6S458.094,171.507,472.6,171.507z M250.734,17.907c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6S236.227,17.907,250.734,17.907z M129.56,432.627c5.973,4.267,10.24,11.947,10.24,20.48c0,14.507-11.093,25.6-25.6,25.6s-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6C120.174,427.507,125.293,429.214,129.56,432.627z"/>
-      <path style="fill:#FFE079;" d="M250.734,154.44c61.44,0,110.933,49.493,110.933,110.933s-49.493,110.933-110.933,110.933S139.8,326.814,139.8,265.373S189.294,154.44,250.734,154.44"/>
+      <path class="svg-c1" d="M387.267,427.507c14.507,0,25.6,11.093,25.6,25.6c0,14.507-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6c0-8.533,4.267-16.213,10.24-20.48C376.174,429.214,381.294,427.507,387.267,427.507z M28.867,171.507c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6s-25.6-11.093-25.6-25.6S14.36,171.507,28.867,171.507z M472.6,171.507c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6S458.094,171.507,472.6,171.507z M250.734,17.907c14.507,0,25.6,11.093,25.6,25.6s-11.093,25.6-25.6,25.6c-14.507,0-25.6-11.093-25.6-25.6S236.227,17.907,250.734,17.907z M129.56,432.627c5.973,4.267,10.24,11.947,10.24,20.48c0,14.507-11.093,25.6-25.6,25.6s-25.6-11.093-25.6-25.6c0-14.507,11.093-25.6,25.6-25.6C120.174,427.507,125.293,429.214,129.56,432.627z"/>
+      <path class="svg-c2" d="M250.734,154.44c61.44,0,110.933,49.493,110.933,110.933s-49.493,110.933-110.933,110.933S139.8,326.814,139.8,265.373S189.294,154.44,250.734,154.44"/>
     </g>
-    <path style="fill:#51565F;" d="M388.267,485.973c-16.213,0-29.867-13.653-29.867-29.867c0-8.533,3.413-15.36,8.533-20.48l-39.253-46.933c-0.853-0.853-0.853-1.707-0.853-2.56c0-0.853,0.853-2.56,1.707-3.413c1.707-1.707,4.267-0.853,5.973,0.853l39.253,46.933c4.267-2.56,9.387-3.413,14.507-3.413c16.213,0,29.867,13.653,29.867,29.867S404.48,485.973,388.267,485.973z M375.467,439.04c-5.12,4.267-8.533,10.24-8.533,17.067c0,11.947,9.387,21.333,21.333,21.333c11.947,0,21.333-9.387,21.333-21.333c0-11.947-9.387-21.333-21.333-21.333C383.147,434.773,378.88,436.48,375.467,439.04L375.467,439.04z M115.2,485.973c-16.213,0-29.867-13.653-29.867-29.867c0-16.213,13.653-29.867,29.867-29.867c5.12,0,10.24,1.707,14.507,3.413l39.253-46.933c1.707-1.707,4.267-1.707,5.973-0.853c0.853,0.853,1.707,1.707,1.707,3.413c0,0.853,0,1.707-0.853,2.56l-39.253,46.933c5.12,5.12,8.533,12.8,8.533,20.48C145.067,472.32,131.414,485.973,115.2,485.973z M115.2,434.773c-11.947,0-21.333,9.387-21.333,21.333c0,11.947,9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333C136.534,444.16,127.147,434.773,115.2,434.773z M251.734,383.573c-63.147,0-115.2-52.053-115.2-115.2s52.053-115.2,115.2-115.2s115.2,52.053,115.2,115.2S314.88,383.573,251.734,383.573z M251.734,161.707c-58.88,0-106.667,47.787-106.667,106.667S192.854,375.04,251.734,375.04S358.4,327.253,358.4,268.373S310.614,161.707,251.734,161.707z M251.734,332.373c-2.56,0-4.267-1.707-4.267-4.267v-4.267c-14.507-1.707-25.6-14.507-25.6-29.867c0-2.56,1.707-4.267,4.267-4.267s4.267,1.707,4.267,4.267c0,11.947,9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333s-9.387-21.333-21.333-21.333c-16.213,0-29.867-13.653-29.867-29.867c0-15.36,11.093-27.307,25.6-29.867v-4.267c0-2.56,1.707-4.267,4.267-4.267S256,206.08,256,208.64v4.267c14.507,1.707,25.6,14.507,25.6,29.867c0,2.56-1.707,4.267-4.267,4.267s-4.267-1.707-4.267-4.267c0-11.947-9.387-21.333-21.333-21.333s-21.333,9.387-21.333,21.333c0,11.947,9.387,21.333,21.333,21.333c16.213,0,29.867,13.653,29.867,29.867c0,15.36-11.093,27.307-25.6,29.867v4.267C256,330.667,254.294,332.373,251.734,332.373z M388.267,236.8c-1.707,0-3.413-0.853-4.267-2.56c0-0.853,0-0.853,0-1.707c0-1.707,0.853-3.413,2.56-4.267l57.173-22.187c0-1.707-0.853-4.267-0.853-5.973c0-16.213,13.653-29.867,29.867-29.867c16.213,0,29.867,13.653,29.867,29.867s-13.653,29.867-29.867,29.867c-11.093,0-21.333-6.827-26.453-16.213l-57.173,22.187C389.12,236.8,389.12,236.8,388.267,236.8z M453.12,207.787c2.56,8.533,11.093,13.653,20.48,13.653c11.947,0,21.333-9.387,21.333-21.333s-9.387-21.333-21.333-21.333s-21.333,9.387-21.333,21.333C452.267,202.667,452.267,205.227,453.12,207.787z M115.2,236.8c-0.853,0-0.853,0-1.707,0L56.32,214.613C51.2,224,40.96,230.827,29.867,230.827C13.653,230.827,0,217.173,0,200.96s13.653-29.867,29.867-29.867s29.867,13.653,29.867,29.867c0,1.707,0,4.267-0.853,5.973l57.173,22.187c1.707,0.853,2.56,2.56,2.56,4.267c0,0.853,0,0.853,0,1.707C118.614,235.947,116.907,236.8,115.2,236.8z M29.867,178.773c-11.947,0-21.333,9.387-21.333,21.333s9.387,21.333,21.333,21.333c9.387,0,17.067-5.973,20.48-13.653c0.853-2.56,0.853-4.267,0.853-6.827C51.2,188.16,41.814,178.773,29.867,178.773z M251.734,127.573c-2.56,0-4.267-1.707-4.267-4.267V76.373c-14.507-1.707-25.6-14.507-25.6-29.867c0-16.213,13.653-29.867,29.867-29.867S281.6,30.293,281.6,46.507c0,15.36-11.093,27.307-25.6,29.867v46.933C256,125.867,254.294,127.573,251.734,127.573z M251.734,25.173c-11.947,0-21.333,9.387-21.333,21.333s9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333S263.68,25.173,251.734,25.173z"/>
+    <path class="svg-c3" d="M388.267,485.973c-16.213,0-29.867-13.653-29.867-29.867c0-8.533,3.413-15.36,8.533-20.48l-39.253-46.933c-0.853-0.853-0.853-1.707-0.853-2.56c0-0.853,0.853-2.56,1.707-3.413c1.707-1.707,4.267-0.853,5.973,0.853l39.253,46.933c4.267-2.56,9.387-3.413,14.507-3.413c16.213,0,29.867,13.653,29.867,29.867S404.48,485.973,388.267,485.973z M375.467,439.04c-5.12,4.267-8.533,10.24-8.533,17.067c0,11.947,9.387,21.333,21.333,21.333c11.947,0,21.333-9.387,21.333-21.333c0-11.947-9.387-21.333-21.333-21.333C383.147,434.773,378.88,436.48,375.467,439.04L375.467,439.04z M115.2,485.973c-16.213,0-29.867-13.653-29.867-29.867c0-16.213,13.653-29.867,29.867-29.867c5.12,0,10.24,1.707,14.507,3.413l39.253-46.933c1.707-1.707,4.267-1.707,5.973-0.853c0.853,0.853,1.707,1.707,1.707,3.413c0,0.853,0,1.707-0.853,2.56l-39.253,46.933c5.12,5.12,8.533,12.8,8.533,20.48C145.067,472.32,131.414,485.973,115.2,485.973z M115.2,434.773c-11.947,0-21.333,9.387-21.333,21.333c0,11.947,9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333C136.534,444.16,127.147,434.773,115.2,434.773z M251.734,383.573c-63.147,0-115.2-52.053-115.2-115.2s52.053-115.2,115.2-115.2s115.2,52.053,115.2,115.2S314.88,383.573,251.734,383.573z M251.734,161.707c-58.88,0-106.667,47.787-106.667,106.667S192.854,375.04,251.734,375.04S358.4,327.253,358.4,268.373S310.614,161.707,251.734,161.707z M251.734,332.373c-2.56,0-4.267-1.707-4.267-4.267v-4.267c-14.507-1.707-25.6-14.507-25.6-29.867c0-2.56,1.707-4.267,4.267-4.267s4.267,1.707,4.267,4.267c0,11.947,9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333s-9.387-21.333-21.333-21.333c-16.213,0-29.867-13.653-29.867-29.867c0-15.36,11.093-27.307,25.6-29.867v-4.267c0-2.56,1.707-4.267,4.267-4.267S256,206.08,256,208.64v4.267c14.507,1.707,25.6,14.507,25.6,29.867c0,2.56-1.707,4.267-4.267,4.267s-4.267-1.707-4.267-4.267c0-11.947-9.387-21.333-21.333-21.333s-21.333,9.387-21.333,21.333c0,11.947,9.387,21.333,21.333,21.333c16.213,0,29.867,13.653,29.867,29.867c0,15.36-11.093,27.307-25.6,29.867v4.267C256,330.667,254.294,332.373,251.734,332.373z M388.267,236.8c-1.707,0-3.413-0.853-4.267-2.56c0-0.853,0-0.853,0-1.707c0-1.707,0.853-3.413,2.56-4.267l57.173-22.187c0-1.707-0.853-4.267-0.853-5.973c0-16.213,13.653-29.867,29.867-29.867c16.213,0,29.867,13.653,29.867,29.867s-13.653,29.867-29.867,29.867c-11.093,0-21.333-6.827-26.453-16.213l-57.173,22.187C389.12,236.8,389.12,236.8,388.267,236.8z M453.12,207.787c2.56,8.533,11.093,13.653,20.48,13.653c11.947,0,21.333-9.387,21.333-21.333s-9.387-21.333-21.333-21.333s-21.333,9.387-21.333,21.333C452.267,202.667,452.267,205.227,453.12,207.787z M115.2,236.8c-0.853,0-0.853,0-1.707,0L56.32,214.613C51.2,224,40.96,230.827,29.867,230.827C13.653,230.827,0,217.173,0,200.96s13.653-29.867,29.867-29.867s29.867,13.653,29.867,29.867c0,1.707,0,4.267-0.853,5.973l57.173,22.187c1.707,0.853,2.56,2.56,2.56,4.267c0,0.853,0,0.853,0,1.707C118.614,235.947,116.907,236.8,115.2,236.8z M29.867,178.773c-11.947,0-21.333,9.387-21.333,21.333s9.387,21.333,21.333,21.333c9.387,0,17.067-5.973,20.48-13.653c0.853-2.56,0.853-4.267,0.853-6.827C51.2,188.16,41.814,178.773,29.867,178.773z M251.734,127.573c-2.56,0-4.267-1.707-4.267-4.267V76.373c-14.507-1.707-25.6-14.507-25.6-29.867c0-16.213,13.653-29.867,29.867-29.867S281.6,30.293,281.6,46.507c0,15.36-11.093,27.307-25.6,29.867v46.933C256,125.867,254.294,127.573,251.734,127.573z M251.734,25.173c-11.947,0-21.333,9.387-21.333,21.333s9.387,21.333,21.333,21.333s21.333-9.387,21.333-21.333S263.68,25.173,251.734,25.173z"/>
   </svg>
   <div>
-    <div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;color:#2563eb;line-height:1.1;">FairSplit</div>
-    <div style="font-family:'Poppins',sans-serif;font-size:11px;color:#6b7280;line-height:1.1;">Smart Group Expense Splitter</div>
+    <div class="site-nav-title">FairSplit</div>
+    <div class="site-nav-sub">Smart Group Expense Splitter</div>
   </div>
 </nav>
 
 <!-- Members + Trip Date -->
 <div class="card">
   <label><strong>Member names</strong> (comma or space separated):</label><br>
-  <input id="members" placeholder="e.g. Name1{Name2}, Name2, Name3" style="width:95%;">
+  <input id="members" placeholder="e.g. Name1{Name2}, Name2, Name3" class="input-full" aria-label="Member names">
   <div class="syntax-hint">
     🔗 <strong>Guardian Format:</strong> <code>User{Guardian}</code> → the user's balance is handled by the guardian &nbsp;
     🔗 <code>User{Guardian1, Guardian2}</code> → balance is split equally among listed guardians<br>
@@ -201,7 +418,7 @@
   <div id="guardianDisplay"></div>
   <div class="trip-date-row">
     <label>📅 Trip / Group Date:</label>
-    <input type="date" id="tripDate">
+    <input type="date" id="tripDate" aria-label="Trip or group date">
   </div>
 </div>
 
@@ -212,7 +429,7 @@
 <!-- Custom Debts -->
 <div class="card">
   <h3>💸 Unequal Dues (Optional Custom Debts)</h3>
-  <p style="color:#555;font-size:14px;margin-top:0;">
+  <p class="section-hint">
     <strong>From</strong> = person who <strong>owes money</strong> &nbsp;|&nbsp;
     <strong>To</strong> = person who <strong>receives money</strong>
   </p>
@@ -223,7 +440,7 @@
 <!-- Already Paid -->
 <div class="card">
   <h3>✅ Already Paid (Optional)</h3>
-  <p style="color:#555;font-size:14px;margin-top:0;">
+  <p class="section-hint">
     <strong>From</strong> = person who <strong>already paid</strong> &nbsp;|&nbsp;
     <strong>To</strong> = person who <strong>received that payment</strong>
   </p>
@@ -235,45 +452,61 @@
 
 <!-- Results -->
 <div class="card" id="resultsCard">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-    <h3 style="margin:0;">⚖ Results</h3>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="resultActions">
-      <button id="copyBtn" onclick="copyText()" style="background:linear-gradient(90deg,#059669,#047857);padding:9px 18px;font-size:14px;">📋 Copy as Text</button>
-      <button id="dlBtn" onclick="downloadImage()" style="background:linear-gradient(90deg,#7c3aed,#6d28d9);padding:9px 18px;font-size:14px;">🖼️ Download as Image</button>
+  <div class="results-header">
+    <h3>⚖ Results</h3>
+    <div class="result-actions" id="resultActions">
+      <button id="copyBtn" onclick="copyText()" class="btn-copy">📋 Copy as Text</button>
+      <button id="dlBtn" onclick="downloadImage()" class="btn-download">🖼️ Download as Image</button>
     </div>
   </div>
   <pre id="output"></pre>
+
+  <!-- ── Receipt-style Final Transactions Box ── -->
+  <div id="finalReceiptWrap">
+    <div class="receipt-card" id="finalReceiptCard">
+      <div class="receipt-banner">
+        <div class="receipt-banner-icon">🧾</div>
+        <div>
+          <div class="receipt-banner-title">Final Settlement Summary</div>
+          <div class="receipt-banner-sub">What everyone actually needs to pay</div>
+        </div>
+      </div>
+      <div class="receipt-body">
+        <div id="receiptTransactions"></div>
+        <div id="receiptAggSection" class="hidden">
+          <hr class="receipt-divider">
+          <div class="agg-label">🔗 After Guardian Transfer</div>
+          <div id="receiptAggTransactions"></div>
+        </div>
+        <hr class="receipt-divider">
+        <div class="receipt-footer">✦ FairSplit — settle smart ✦</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 let members = [];
-let guardianMap = {};   // { memberName: [guardian1, guardian2, ...] } (validated)
+let guardianMap = {};
 let groupCount = 0;
 let customDebtCount = 0;
 let deletedGroups = new Set();
 let apCounters = { global: 0 };
 let deletedAPs = new Set();
 
-// ─── Guardian parsing ───────────────────────────────────────────
-
 function parseMembersInput(raw) {
   const result = [];
   const rawGuardianMap = {};
   const tokens = raw.split(/[\s,]+/).filter(Boolean);
-
   for (let token of tokens) {
     if (token.includes('{')) {
       const [name, rest] = token.split('{');
       const guardians = rest.replace('}', '').split(',').map(g => g.trim()).filter(Boolean);
-      if (name) {
-        result.push(name);
-        if (guardians.length) rawGuardianMap[name] = guardians;
-      }
-    } else if (token) {
-      result.push(token);
-    }
+      if (name) { result.push(name); if (guardians.length) rawGuardianMap[name] = guardians; }
+    } else if (token) { result.push(token); }
   }
   return { members: result, rawGuardianMap };
 }
@@ -282,65 +515,35 @@ function validateGuardians(members, rawGuardianMap) {
   const memberSet = new Set(members);
   const guardianMap = {};
   const warnings = [];
-
   for (const [person, guardians] of Object.entries(rawGuardianMap)) {
     const invalid = guardians.filter(g => !memberSet.has(g));
     if (invalid.length) {
       warnings.push(`⚠️ Guardian name(s) [${invalid.join(', ')}] for "${person}" not found in members — treating "${person}" as a normal member.`);
-    } else {
-      guardianMap[person] = guardians;
-    }
+    } else { guardianMap[person] = guardians; }
   }
   return { guardianMap, warnings };
 }
 
-// ─── UI helpers ─────────────────────────────────────────────────
-
-function splitNames(input) {
-  return input.split(/[,\s]+/).map(n => n.trim()).filter(Boolean);
-}
-
-function formatDate(val) {
-  if (!val) return '';
-  const [y, m, d] = val.split('-');
-  return `${d}/${m}/${y}`;
-}
-
-function todayISO() {
-  return new Date().toISOString().split('T')[0];
-}
+function splitNames(input) { return input.split(/[,\s]+/).map(n => n.trim()).filter(Boolean); }
+function formatDate(val) { if (!val) return ''; const [y,m,d]=val.split('-'); return `${d}/${m}/${y}`; }
+function todayISO() { return new Date().toISOString().split('T')[0]; }
 
 function setMembers() {
   const raw = document.getElementById('members').value.trim();
   if (!raw) { alert("Please enter at least one member."); return; }
-
   const parsed = parseMembersInput(raw);
   const validated = validateGuardians(parsed.members, parsed.rawGuardianMap);
-
   members = parsed.members;
   guardianMap = validated.guardianMap;
-
-  document.getElementById('memberCount').innerText =
-    `Members added: ${members.length} → ${members.join(", ")}`;
-
-  // Show guardian info / warnings
+  document.getElementById('memberCount').innerText = `Members added: ${members.length} → ${members.join(", ")}`;
   const display = document.getElementById('guardianDisplay');
   display.innerHTML = '';
-
   if (validated.warnings.length) {
-    validated.warnings.forEach(w => {
-      const d = document.createElement('div');
-      d.className = 'guardian-warning';
-      d.textContent = w;
-      display.appendChild(d);
-    });
+    validated.warnings.forEach(w => { const d=document.createElement('div'); d.className='guardian-warning'; d.textContent=w; display.appendChild(d); });
   }
-
   if (Object.keys(guardianMap).length) {
-    const d = document.createElement('div');
-    d.className = 'guardian-info';
-    d.innerHTML = `<strong>🔗 ${Object.keys(guardianMap).length} guardian assignment(s) confirmed.</strong>`;
-    display.appendChild(d);
+    const d=document.createElement('div'); d.className='guardian-info';
+    d.innerHTML=`<strong>🔗 ${Object.keys(guardianMap).length} guardian assignment(s) confirmed.</strong>`; display.appendChild(d);
   }
 }
 
@@ -354,17 +557,14 @@ function selectAll(groupNum) {
 function addGroup() {
   if (members.length === 0) { alert("Add members first!"); return; }
   groupCount++;
-
   const div = document.createElement('div');
   div.className = 'card fade-in';
   div.id = `group_${groupCount}`;
-
   const checkboxesHTML = members.map(m =>
     `<label><input type="checkbox" class="participantCheckbox" value="${m}" onchange="updateParticipants(${groupCount})"> ${m}</label>`
   ).join(' ');
-
   div.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    <div class="group-header-row">
       <div class="group-header">🧾 Expense Group #${groupCount}</div>
       <button onclick="deleteGroup(${groupCount})" class="delete-btn">🗑️ Delete</button>
     </div>
@@ -372,7 +572,7 @@ function addGroup() {
     <button class="select-all-btn" onclick="selectAll(${groupCount})">☑️ Select / Deselect All</button><br>
     <div class="participants-checkboxes" id="partCheckboxes_${groupCount}">${checkboxesHTML}</div>
     <div class="participantCount" id="participantCount_${groupCount}"></div>
-    Number of payers: <input type="number" id="num_${groupCount}" value="1" min="1" style="width:50px" onchange="updatePayers(${groupCount})"><br>
+    Number of payers: <input type="number" id="num_${groupCount}" value="1" min="1" class="input-num-sm" aria-label="Number of payers" onchange="updatePayers(${groupCount})"><br>
     <div id="payers_${groupCount}"></div>
   `;
   document.getElementById('groups').appendChild(div);
@@ -390,11 +590,7 @@ function renumberGroups() {
   for (let i = 1; i <= groupCount; i++) {
     if (deletedGroups.has(i)) continue;
     const groupDiv = document.getElementById(`group_${i}`);
-    if (groupDiv) {
-      const hdr = groupDiv.querySelector('.group-header');
-      if (hdr) hdr.innerHTML = `🧾 Expense Group #${visibleNum}`;
-      visibleNum++;
-    }
+    if (groupDiv) { const hdr=groupDiv.querySelector('.group-header'); if(hdr) hdr.innerHTML=`🧾 Expense Group #${visibleNum}`; visibleNum++; }
   }
 }
 
@@ -403,27 +599,21 @@ function addAlreadyPaid() {
   apCounters.global++;
   const apId = apCounters.global;
   const opts = members.map(m => `<option>${m}</option>`).join('');
-
   const div = document.createElement('div');
   div.className = 'debt-card fade-in';
   div.id = `ap_${apId}`;
   div.innerHTML = `
     <button onclick="deleteAlreadyPaid(${apId})" class="debt-delete">🗑️</button>
-    <label>From (already paid):</label>
-    <select id="apFrom_${apId}">${opts}</select>
-    <label>To (received):</label>
-    <select id="apTo_${apId}">${opts}</select>
-    ₹<input type="number" id="apAmt_${apId}" min="0" value="0" style="width:100px;">
-    <input type="text" id="apDesc_${apId}" placeholder="Description (optional)" style="width:170px;">
-    <input type="date" id="apDate_${apId}" value="${todayISO()}" style="width:155px;">
+    <label>From (already paid):</label><select id="apFrom_${apId}">${opts}</select>
+    <label>To (received):</label><select id="apTo_${apId}">${opts}</select>
+    ₹<input type="number" id="apAmt_${apId}" min="0" value="0" class="input-short" aria-label="Already paid amount">
+    <input type="text" id="apDesc_${apId}" placeholder="Description (optional)" class="input-med" aria-label="Description">
+    <input type="date" id="apDate_${apId}" value="${todayISO()}" class="input-date-w" aria-label="Payment date">
   `;
   document.getElementById('alreadyPaidList').appendChild(div);
 }
 
-function deleteAlreadyPaid(apId) {
-  const el = document.getElementById(`ap_${apId}`);
-  if (el) { el.remove(); deletedAPs.add(apId); }
-}
+function deleteAlreadyPaid(apId) { const el=document.getElementById(`ap_${apId}`); if(el){el.remove();deletedAPs.add(apId);} }
 
 function addCustomDebt() {
   if (members.length === 0) { alert("Add members first!"); return; }
@@ -433,25 +623,20 @@ function addCustomDebt() {
   div.id = `debt_${customDebtCount}`;
   div.innerHTML = `
     <button onclick="deleteDebt(${customDebtCount})" class="debt-delete">🗑️</button>
-    <label>From (owes):</label>
-    <select id="debtFrom_${customDebtCount}">${members.map(m => `<option>${m}</option>`).join("")}</select>
-    <label>To (receives):</label>
-    <select id="debtTo_${customDebtCount}">${members.map(m => `<option>${m}</option>`).join("")}</select>
-    ₹<input type="number" id="debtAmt_${customDebtCount}" min="0" value="0" style="width:100px;">
-    <input type="text" id="debtDesc_${customDebtCount}" placeholder="Description (optional)" style="width:170px;">
-    <input type="date" id="debtDate_${customDebtCount}" value="${todayISO()}" style="width:155px;">
+    <label>From (owes):</label><select id="debtFrom_${customDebtCount}">${members.map(m=>`<option>${m}</option>`).join("")}</select>
+    <label>To (receives):</label><select id="debtTo_${customDebtCount}">${members.map(m=>`<option>${m}</option>`).join("")}</select>
+    ₹<input type="number" id="debtAmt_${customDebtCount}" min="0" value="0" class="input-short" aria-label="Debt amount">
+    <input type="text" id="debtDesc_${customDebtCount}" placeholder="Description (optional)" class="input-med" aria-label="Description">
+    <input type="date" id="debtDate_${customDebtCount}" value="${todayISO()}" class="input-date-w" aria-label="Debt date">
   `;
   document.getElementById('customDebts').appendChild(div);
 }
 
-function deleteDebt(debtNum) {
-  const el = document.getElementById(`debt_${debtNum}`);
-  if (el) el.remove();
-}
+function deleteDebt(debtNum) { const el=document.getElementById(`debt_${debtNum}`); if(el) el.remove(); }
 
 function updateParticipants(groupNum) {
   const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
-  const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+  const participants = Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
   document.getElementById(`participantCount_${groupNum}`).innerText = `Participants: ${participants.join(", ")}`;
   updatePayers(groupNum);
 }
@@ -460,294 +645,262 @@ function updatePayers(groupNum) {
   const n = parseInt(document.getElementById(`num_${groupNum}`).value);
   const payerDiv = document.getElementById(`payers_${groupNum}`);
   const checkboxes = document.querySelectorAll(`#partCheckboxes_${groupNum} input[type=checkbox]`);
-  const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-  if (participants.length === 0) { payerDiv.innerHTML = ''; return; }
-
+  const participants = Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
+  if (participants.length === 0) { payerDiv.innerHTML=''; return; }
   let existingData = [];
-  for (let i = 0; i < payerDiv.children.length; i++) {
-    const sel  = payerDiv.querySelector(`#payerName_${groupNum}_${i}`);
-    const amt  = payerDiv.querySelector(`#payerAmt_${groupNum}_${i}`);
-    const desc = payerDiv.querySelector(`#payerDesc_${groupNum}_${i}`);
-    const dt   = payerDiv.querySelector(`#payerDate_${groupNum}_${i}`);
-    if (sel && amt && desc) existingData[i] = {
-      name: sel.value, amt: amt.value,
-      desc: desc.value, date: dt ? dt.value : todayISO()
-    };
+  for (let i=0; i<payerDiv.children.length; i++) {
+    const sel=payerDiv.querySelector(`#payerName_${groupNum}_${i}`);
+    const amt=payerDiv.querySelector(`#payerAmt_${groupNum}_${i}`);
+    const desc=payerDiv.querySelector(`#payerDesc_${groupNum}_${i}`);
+    const dt=payerDiv.querySelector(`#payerDate_${groupNum}_${i}`);
+    if(sel&&amt&&desc) existingData[i]={name:sel.value,amt:amt.value,desc:desc.value,date:dt?dt.value:todayISO()};
   }
-
-  payerDiv.innerHTML = '';
-  for (let i = 0; i < n; i++) {
-    let prev = existingData[i] || {name: participants[0], amt: 0, desc: '', date: todayISO()};
-    payerDiv.innerHTML += `
+  payerDiv.innerHTML='';
+  for (let i=0; i<n; i++) {
+    let prev=existingData[i]||{name:participants[0],amt:0,desc:'',date:todayISO()};
+    payerDiv.innerHTML+=`
       <label>Payer ${i+1}:</label>
-      <select id="payerName_${groupNum}_${i}">
-        ${participants.map(m => `<option ${m===prev.name?'selected':''}>${m}</option>`).join("")}
-      </select>
-      ₹<input type="number" id="payerAmt_${groupNum}_${i}" min="0" value="${prev.amt}">
-      Description: <input type="text" id="payerDesc_${groupNum}_${i}" placeholder="What is this payment for?" value="${prev.desc}" style="width:160px;">
-      <input type="date" id="payerDate_${groupNum}_${i}" value="${prev.date}" style="width:155px;"><br>
+      <select id="payerName_${groupNum}_${i}">${participants.map(m=>`<option ${m===prev.name?'selected':''}>${m}</option>`).join("")}</select>
+      ₹<input type="number" id="payerAmt_${groupNum}_${i}" min="0" value="${prev.amt}" aria-label="Amount paid">
+      Description: <input type="text" id="payerDesc_${groupNum}_${i}" placeholder="What is this payment for?" value="${prev.desc}" class="input-desc" aria-label="Payment description">
+      <input type="date" id="payerDate_${groupNum}_${i}" value="${prev.date}" class="input-date-w" aria-label="Payment date"><br>
     `;
   }
 }
 
-// ─── Core math ──────────────────────────────────────────────────
-
-function minimizeTransactions(expenses, customDebts = [], alreadyPaid = []) {
+function minimizeTransactions(expenses, customDebts=[], alreadyPaid=[]) {
   let balance = {};
-
   expenses.forEach(exp => {
     const totalAmounts = {};
-    exp.payments.forEach(p => {
-      balance[p.name] = balance[p.name] || 0;
-      totalAmounts[p.name] = (totalAmounts[p.name] || 0) + p.amt;
-    });
-    const total = exp.payments.reduce((acc, p) => acc + p.amt, 0);
-    const share = total / exp.participants.length;
-    exp.participants.forEach(p => { balance[p] = balance[p] || 0; });
-    for (let p of exp.participants) {
-      balance[p] += (totalAmounts[p] || 0) - share;
-    }
+    exp.payments.forEach(p => { balance[p.name]=balance[p.name]||0; totalAmounts[p.name]=(totalAmounts[p.name]||0)+p.amt; });
+    const total=exp.payments.reduce((acc,p)=>acc+p.amt,0);
+    const share=total/exp.participants.length;
+    exp.participants.forEach(p => { balance[p]=balance[p]||0; });
+    for (let p of exp.participants) balance[p]+=(totalAmounts[p]||0)-share;
   });
-
-  customDebts.forEach(debt => {
-    balance[debt.from] = (balance[debt.from] || 0) - debt.amt;
-    balance[debt.to]   = (balance[debt.to]   || 0) + debt.amt;
-  });
-
-  alreadyPaid.forEach(ap => {
-    balance[ap.from] = (balance[ap.from] || 0) + ap.amt;
-    balance[ap.to]   = (balance[ap.to]   || 0) - ap.amt;
-  });
-
+  customDebts.forEach(debt => { balance[debt.from]=(balance[debt.from]||0)-debt.amt; balance[debt.to]=(balance[debt.to]||0)+debt.amt; });
+  alreadyPaid.forEach(ap => { balance[ap.from]=(balance[ap.from]||0)+ap.amt; balance[ap.to]=(balance[ap.to]||0)-ap.amt; });
   return { transactions: settle(balance), balance };
 }
 
 function settle(balance) {
-  let debtors   = Object.entries(balance).filter(([_,a]) => a < -1e-6).map(([p,a]) => [p,-a]).sort((a,b) => b[1]-a[1]);
-  let creditors = Object.entries(balance).filter(([_,a]) => a >  1e-6).map(([p,a]) => [p, a]).sort((a,b) => b[1]-a[1]);
-  let i = 0, j = 0, transactions = [];
-
-  while (i < debtors.length && j < creditors.length) {
-    let s = Math.min(debtors[i][1], creditors[j][1]);
-    transactions.push({ from: debtors[i][0], amt: s, to: creditors[j][0] });
-    debtors[i][1]   -= s;
-    creditors[j][1] -= s;
-    if (debtors[i][1]   < 1e-6) i++;
-    if (creditors[j][1] < 1e-6) j++;
+  let debtors=Object.entries(balance).filter(([_,a])=>a<-1e-6).map(([p,a])=>[p,-a]).sort((a,b)=>b[1]-a[1]);
+  let creditors=Object.entries(balance).filter(([_,a])=>a>1e-6).map(([p,a])=>[p,a]).sort((a,b)=>b[1]-a[1]);
+  let i=0,j=0,transactions=[];
+  while(i<debtors.length&&j<creditors.length){
+    let s=Math.min(debtors[i][1],creditors[j][1]);
+    transactions.push({from:debtors[i][0],amt:s,to:creditors[j][0]});
+    debtors[i][1]-=s; creditors[j][1]-=s;
+    if(debtors[i][1]<1e-6)i++; if(creditors[j][1]<1e-6)j++;
   }
   return transactions;
 }
 
 function aggregateWithGuardians(balance, guardianMap) {
   const notes = [];
-  const agg = Object.fromEntries(Object.entries(balance).map(([k,v]) => [k, Math.round(v*100)/100]));
-
+  const agg = Object.fromEntries(Object.entries(balance).map(([k,v])=>[k,Math.round(v*100)/100]));
   for (const [person, guardians] of Object.entries(guardianMap)) {
-    const personBal = Math.round((agg[person] || 0) * 100) / 100;
-    if (Math.abs(personBal) < 1e-6) {
-      notes.push({ type: 'info', text: `✅ ${person} was already settled — no transfer needed.` });
-      continue;
-    }
-
-    const perGuardian = Math.round((personBal / guardians.length) * 100) / 100;
-    const remainder   = Math.round((personBal - perGuardian * guardians.length) * 100) / 100;
-
-    guardians.forEach((guardian, idx) => {
-      const portion = Math.round((perGuardian + (idx === 0 ? remainder : 0)) * 100) / 100;
-      agg[guardian] = Math.round(((agg[guardian] || 0) + portion) * 100) / 100;
-
-      if (personBal > 0) {
-        notes.push({ type: 'credit', text: `💚 ${guardian} receives ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}` });
-      } else {
-        notes.push({ type: 'debit', text: `💸 ${guardian} pays ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}` });
-      }
+    const personBal = Math.round((agg[person]||0)*100)/100;
+    if (Math.abs(personBal)<1e-6) { notes.push({type:'info',text:`✅ ${person} was already settled — no transfer needed.`}); continue; }
+    const perGuardian=Math.round((personBal/guardians.length)*100)/100;
+    const remainder=Math.round((personBal-perGuardian*guardians.length)*100)/100;
+    guardians.forEach((guardian,idx)=>{
+      const portion=Math.round((perGuardian+(idx===0?remainder:0))*100)/100;
+      agg[guardian]=Math.round(((agg[guardian]||0)+portion)*100)/100;
+      if(personBal>0) notes.push({type:'credit',text:`💚 ${guardian} receives ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}`});
+      else notes.push({type:'debit',text:`💸 ${guardian} pays ₹${Math.abs(portion).toFixed(2)} on behalf of ${person}`});
     });
-
-    agg[person] = 0;
+    agg[person]=0;
   }
-
   return { aggTransactions: settle(agg), notes, aggBalance: agg };
 }
 
-// ─── Compute & render ────────────────────────────────────────────
+// ── Render receipt box ──────────────────────────────────────────
+function renderReceipt(transactions, aggTransactions, hasGuardians) {
+  const wrap = document.getElementById('finalReceiptWrap');
+  const txnDiv = document.getElementById('receiptTransactions');
+  const aggSection = document.getElementById('receiptAggSection');
+  const aggDiv = document.getElementById('receiptAggTransactions');
+
+  txnDiv.innerHTML = '';
+  aggDiv.innerHTML = '';
+
+  const colLabels = `
+    <div class="receipt-col-labels">
+      <span class="col-label-from">📤 Sender</span>
+      <span class="col-label-spacer"></span>
+      <span class="col-label-to">📥 Receiver</span>
+      <span class="col-label-amt">Amount</span>
+    </div>`;
+
+  if (transactions.length === 0) {
+    txnDiv.innerHTML = '<div class="receipt-settled">🎉 All settled up!</div>';
+  } else {
+    txnDiv.innerHTML = colLabels;
+    transactions.forEach(t => {
+      txnDiv.innerHTML += `
+        <div class="txn-row">
+          <span class="txn-from">${t.from}</span>
+          <span class="txn-arrow">→</span>
+          <span class="txn-to">${t.to}</span>
+          <span class="txn-amt">₹${t.amt.toFixed(2)}</span>
+        </div>`;
+    });
+  }
+
+  if (hasGuardians) {
+    aggSection.classList.remove('hidden');
+    if (aggTransactions.length === 0) {
+      aggDiv.innerHTML = '<div class="receipt-settled receipt-settled-sm">🎉 All settled up!</div>';
+    } else {
+      aggDiv.innerHTML = colLabels;
+      aggTransactions.forEach(t => {
+        aggDiv.innerHTML += `
+          <div class="txn-row agg-txn-row">
+            <span class="txn-from">${t.from}</span>
+            <span class="txn-arrow">→</span>
+            <span class="txn-to">${t.to}</span>
+            <span class="txn-amt">₹${t.amt.toFixed(2)}</span>
+          </div>`;
+      });
+    }
+  } else {
+    aggSection.classList.add('hidden');
+  }
+
+  wrap.style.display = 'block';
+}
 
 function compute() {
   const tripDate = formatDate(document.getElementById('tripDate').value);
   let expenses = [];
 
-  for (let i = 1; i <= groupCount; i++) {
+  for (let i=1; i<=groupCount; i++) {
     if (deletedGroups.has(i)) continue;
-    const checkboxes = document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
-    const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-    if (participants.length === 0) continue;
-
-    const num = parseInt(document.getElementById(`num_${i}`).value);
-    const payments = [];
-    for (let j = 0; j < num; j++) {
-      const name = document.getElementById(`payerName_${i}_${j}`).value;
-      const amt  = parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value) || 0;
-      const desc = document.getElementById(`payerDesc_${i}_${j}`).value.trim() || "No description";
-      const date = formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
-      payments.push({name, amt, desc, date});
+    const checkboxes=document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
+    const participants=Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
+    if (participants.length===0) continue;
+    const num=parseInt(document.getElementById(`num_${i}`).value);
+    const payments=[];
+    for (let j=0;j<num;j++) {
+      const name=document.getElementById(`payerName_${i}_${j}`).value;
+      const amt=parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value)||0;
+      const desc=document.getElementById(`payerDesc_${i}_${j}`).value.trim()||"No description";
+      const date=formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
+      payments.push({name,amt,desc,date});
     }
-    expenses.push({payments, participants, groupIndex: i});
+    expenses.push({payments,participants,groupIndex:i});
   }
 
-  let customDebts = [];
-  for (let i = 1; i <= customDebtCount; i++) {
-    const fromEl = document.getElementById(`debtFrom_${i}`);
-    if (!fromEl) continue;
-    const from = fromEl.value, to = document.getElementById(`debtTo_${i}`).value;
-    const amt  = parseFloat(document.getElementById(`debtAmt_${i}`).value) || 0;
-    const desc = document.getElementById(`debtDesc_${i}`).value.trim();
-    const date = formatDate(document.getElementById(`debtDate_${i}`).value);
-    if (amt > 0 && from !== to) customDebts.push({from, to, amt, desc, date});
+  let customDebts=[];
+  for (let i=1;i<=customDebtCount;i++) {
+    const fromEl=document.getElementById(`debtFrom_${i}`);
+    if(!fromEl) continue;
+    const from=fromEl.value,to=document.getElementById(`debtTo_${i}`).value;
+    const amt=parseFloat(document.getElementById(`debtAmt_${i}`).value)||0;
+    const desc=document.getElementById(`debtDesc_${i}`).value.trim();
+    const date=formatDate(document.getElementById(`debtDate_${i}`).value);
+    if(amt>0&&from!==to) customDebts.push({from,to,amt,desc,date});
   }
 
-  let allAlreadyPaid = [];
-  for (let i = 1; i <= apCounters.global; i++) {
-    if (deletedAPs.has(i)) continue;
-    const fromEl = document.getElementById(`apFrom_${i}`);
-    if (!fromEl) continue;
-    const from = fromEl.value, to = document.getElementById(`apTo_${i}`).value;
-    const amt  = parseFloat(document.getElementById(`apAmt_${i}`).value) || 0;
-    const desc = document.getElementById(`apDesc_${i}`).value.trim();
-    const date = formatDate(document.getElementById(`apDate_${i}`).value);
-    if (amt > 0 && from !== to) allAlreadyPaid.push({from, to, amt, desc: desc || 'Already paid', date});
+  let allAlreadyPaid=[];
+  for (let i=1;i<=apCounters.global;i++) {
+    if(deletedAPs.has(i)) continue;
+    const fromEl=document.getElementById(`apFrom_${i}`);
+    if(!fromEl) continue;
+    const from=fromEl.value,to=document.getElementById(`apTo_${i}`).value;
+    const amt=parseFloat(document.getElementById(`apAmt_${i}`).value)||0;
+    const desc=document.getElementById(`apDesc_${i}`).value.trim();
+    const date=formatDate(document.getElementById(`apDate_${i}`).value);
+    if(amt>0&&from!==to) allAlreadyPaid.push({from,to,amt,desc:desc||'Already paid',date});
   }
 
-  // ── Build output text ──────────────────────────────────────────
-  let out = "";
-  if (tripDate) out += `📅 Trip / Group Date: ${tripDate}\n${'─'.repeat(38)}\n\n`;
+  let out="";
+  if(tripDate) out+=`📅 Trip / Group Date: ${tripDate}\n${'─'.repeat(38)}\n\n`;
 
-  let visibleNum = 1;
-  for (let i = 1; i <= groupCount; i++) {
-    if (deletedGroups.has(i)) continue;
-    const checkboxes = document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
-    const participants = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-    if (participants.length === 0) continue;
-
-    const num = parseInt(document.getElementById(`num_${i}`).value);
-    out += `💡 Group #${visibleNum}\n`;
-    for (let j = 0; j < num; j++) {
-      const name = document.getElementById(`payerName_${i}_${j}`).value;
-      const amt  = parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value) || 0;
-      const desc = document.getElementById(`payerDesc_${i}_${j}`).value.trim() || "No description";
-      const date = formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
-      out += `   ${name} paid ₹${amt.toFixed(2)} → ${desc}`;
-      if (date) out += ` (${date})`;
-      out += `\n`;
+  let visibleNum=1;
+  for (let i=1;i<=groupCount;i++) {
+    if(deletedGroups.has(i)) continue;
+    const checkboxes=document.querySelectorAll(`#partCheckboxes_${i} input[type=checkbox]`);
+    const participants=Array.from(checkboxes).filter(cb=>cb.checked).map(cb=>cb.value);
+    if(participants.length===0) continue;
+    const num=parseInt(document.getElementById(`num_${i}`).value);
+    out+=`💡 Group #${visibleNum}\n`;
+    for(let j=0;j<num;j++){
+      const name=document.getElementById(`payerName_${i}_${j}`).value;
+      const amt=parseFloat(document.getElementById(`payerAmt_${i}_${j}`).value)||0;
+      const desc=document.getElementById(`payerDesc_${i}_${j}`).value.trim()||"No description";
+      const date=formatDate(document.getElementById(`payerDate_${i}_${j}`).value);
+      out+=`   ${name} paid ₹${amt.toFixed(2)} → ${desc}`; if(date) out+=` (${date})`; out+=`\n`;
     }
-    out += `   Participants: ${participants.join(", ")}\n\n`;
-    visibleNum++;
+    out+=`   Participants: ${participants.join(", ")}\n\n`; visibleNum++;
   }
 
-  if (allAlreadyPaid.length > 0) {
-    out += "✅ Already Paid:\n";
-    allAlreadyPaid.forEach(ap => {
-      out += `   ${ap.from} → ${ap.to}: ₹${ap.amt.toFixed(2)}`;
-      if (ap.desc && ap.desc !== 'Already paid') out += ` (${ap.desc})`;
-      if (ap.date) out += ` (${ap.date})`;
-      out += `\n`;
-    });
-    out += `\n`;
+  if(allAlreadyPaid.length>0){
+    out+="✅ Already Paid:\n";
+    allAlreadyPaid.forEach(ap=>{out+=`   ${ap.from} → ${ap.to}: ₹${ap.amt.toFixed(2)}`; if(ap.desc&&ap.desc!=='Already paid') out+=` (${ap.desc})`; if(ap.date) out+=` (${ap.date})`; out+=`\n`;});
+    out+=`\n`;
   }
 
-  if (customDebts.length > 0) {
-    out += "💸 Custom Debts:\n";
-    customDebts.forEach(d => {
-      out += `   ${d.from} owes ${d.to} ₹${d.amt.toFixed(2)}`;
-      if (d.desc) out += ` → ${d.desc}`;
-      if (d.date) out += ` (${d.date})`;
-      out += "\n";
-    });
-    out += "\n";
+  if(customDebts.length>0){
+    out+="💸 Custom Debts:\n";
+    customDebts.forEach(d=>{out+=`   ${d.from} owes ${d.to} ₹${d.amt.toFixed(2)}`; if(d.desc) out+=` → ${d.desc}`; if(d.date) out+=` (${d.date})`; out+="\n";});
+    out+="\n";
   }
 
   const { transactions, balance } = minimizeTransactions(expenses, customDebts, allAlreadyPaid);
 
-  out += "⚖ Final Balances:\n";
-  members.forEach(p => {
-    const raw = balance[p] || 0;
-    const amt = Math.round(raw * 100) / 100;
-    if      (amt >  0.005) out += `   ${p}: gets ₹${amt.toFixed(2)}\n`;
-    else if (amt < -0.005) out += `   ${p}: owes ₹${(-amt).toFixed(2)}\n`;
-    else                   out += `   ${p}: settled up ✅\n`;
+  out+="⚖ Final Balances:\n";
+  members.forEach(p=>{
+    const raw=balance[p]||0; const amt=Math.round(raw*100)/100;
+    if(amt>0.005) out+=`   ${p}: gets ₹${amt.toFixed(2)}\n`;
+    else if(amt<-0.005) out+=`   ${p}: owes ₹${(-amt).toFixed(2)}\n`;
+    else out+=`   ${p}: settled up ✅\n`;
   });
 
-  out += "\n💳 Simplified Transactions:\n";
-  if (transactions.length === 0) out += "   All settled up! 🎉";
-  else transactions.forEach(t => out += `   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
+  out+="\n💳 Simplified Transactions:\n";
+  if(transactions.length===0) out+="   All settled up! 🎉";
+  else transactions.forEach(t=>out+=`   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
 
-  // ── Guardian aggregation section ───────────────────────────────
-  if (Object.keys(guardianMap).length > 0) {
-    const { aggTransactions, notes } = aggregateWithGuardians(balance, guardianMap);
+  let aggTransactions = [];
+  const hasGuardians = Object.keys(guardianMap).length > 0;
 
-    out += `\n${'─'.repeat(38)}\n`;
-    out += "🔗 Aggregated Transactions (After Guardian Transfer)\n";
-    out += `${'─'.repeat(38)}\n`;
-
-    out += "\n📋 Transfer Notes:\n";
-    if (notes.length) {
-      notes.forEach(n => out += `   ${n.text}\n`);
-    } else {
-      out += "   (no transfers needed)\n";
-    }
-
-    out += "\n💳 Aggregated Simplified Transactions:\n";
-    if (aggTransactions.length === 0) out += "   All settled up! 🎉";
-    else aggTransactions.forEach(t => out += `   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
+  if(hasGuardians){
+    const result = aggregateWithGuardians(balance, guardianMap);
+    aggTransactions = result.aggTransactions;
+    const { notes } = result;
+    out+=`\n${'─'.repeat(38)}\n`;
+    out+="🔗 Aggregated Transactions (After Guardian Transfer)\n";
+    out+=`${'─'.repeat(38)}\n\n📋 Transfer Notes:\n`;
+    if(notes.length) notes.forEach(n=>out+=`   ${n.text}\n`); else out+="   (no transfers needed)\n";
+    out+="\n💳 Aggregated Simplified Transactions:\n";
+    if(aggTransactions.length===0) out+="   All settled up! 🎉";
+    else aggTransactions.forEach(t=>out+=`   ${t.from} pays ₹${t.amt.toFixed(2)} to ${t.to}\n`);
   }
 
   document.getElementById("output").innerText = out;
+  renderReceipt(transactions, aggTransactions, hasGuardians);
 }
 
-// ─── Copy & Download ─────────────────────────────────────────────
-
 function copyText() {
-  const text = document.getElementById('output').innerText;
-  if (!text.trim()) { alert("Compute settlements first!"); return; }
-  const btn = document.getElementById('copyBtn');
-  const orig = btn.innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    btn.innerText = '✅ Copied!';
-    setTimeout(() => btn.innerText = orig, 2000);
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    btn.innerText = '✅ Copied!';
-    setTimeout(() => btn.innerText = orig, 2000);
-  });
+  const text=document.getElementById('output').innerText;
+  if(!text.trim()){alert("Compute settlements first!");return;}
+  const btn=document.getElementById('copyBtn'); const orig=btn.innerText;
+  navigator.clipboard.writeText(text).then(()=>{btn.innerText='✅ Copied!';setTimeout(()=>btn.innerText=orig,2000);})
+  .catch(()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.innerText='✅ Copied!';setTimeout(()=>btn.innerText=orig,2000);});
 }
 
 function downloadImage() {
-  const output = document.getElementById('output');
-  if (!output.innerText.trim()) { alert("Compute settlements first!"); return; }
-  const btn = document.getElementById('dlBtn');
-  const orig = btn.innerText;
-  btn.innerText = '⏳ Generating...';
-  btn.disabled = true;
-  document.getElementById('resultActions').style.visibility = 'hidden';
-  html2canvas(document.getElementById('resultsCard'), {
-    scale: 2, backgroundColor: '#ffffff', useCORS: true
-  }).then(canvas => {
-    document.getElementById('resultActions').style.visibility = 'visible';
-    btn.innerText = orig;
-    btn.disabled = false;
-    const link = document.createElement('a');
-    link.download = 'fairsplit-results.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }).catch(() => {
-    document.getElementById('resultActions').style.visibility = 'visible';
-    btn.innerText = orig;
-    btn.disabled = false;
-    alert("Image failed. Try Copy as Text instead.");
-  });
+  const output=document.getElementById('output');
+  if(!output.innerText.trim()){alert("Compute settlements first!");return;}
+  const btn=document.getElementById('dlBtn'); const orig=btn.innerText;
+  btn.innerText='⏳ Generating...'; btn.disabled=true;
+  document.getElementById('resultActions').style.visibility='hidden';
+  html2canvas(document.getElementById('resultsCard'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(canvas=>{
+    document.getElementById('resultActions').style.visibility='visible';
+    btn.innerText=orig; btn.disabled=false;
+    const link=document.createElement('a'); link.download='fairsplit-results.png'; link.href=canvas.toDataURL('image/png'); link.click();
+  }).catch(()=>{document.getElementById('resultActions').style.visibility='visible';btn.innerText=orig;btn.disabled=false;alert("Image failed. Try Copy as Text instead.");});
 }
 </script>
 
